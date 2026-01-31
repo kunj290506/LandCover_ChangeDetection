@@ -1,0 +1,29 @@
+# Data
+data/
+*.zip
+*.tar.gz
+*.tif
+*.tiff
+
+# Documentation
+*.pdf
+
+# Model Checkpoints
+checkpoints/
+*.pth
+*.pt
+
+# Outputs
+output/
+output.tif
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.env
+
+# IDE
+.vscode/
+.idea/
