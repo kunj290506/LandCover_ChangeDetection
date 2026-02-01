@@ -16,7 +16,9 @@ def train_epoch(model, loader, criterion, optimizer, device):
     losses = AverageMeter()
     
     loop = tqdm(loader, desc="Training")
-    for batch in loop:
+    loop = tqdm(loader, desc="Training")
+    for i, batch in enumerate(loop):
+        print(f"Processing Batch {i}/{len(loader)}")
         img1 = batch['image1'].to(device)
         img2 = batch['image2'].to(device)
         label = batch['label'].to(device)
@@ -77,8 +79,12 @@ def main(args):
     train_dataset = ChangeDetectionDataset(args.data_root, 'train_list.txt', mode='train', patch_size=256)
     val_dataset = ChangeDetectionDataset(args.data_root, 'val_list.txt', mode='val', patch_size=256)
     
-    train_loader = DataLoader(train_dataset, batch_size=args.batch_size, shuffle=True, num_workers=4, pin_memory=True)
-    val_loader = DataLoader(val_dataset, batch_size=args.batch_size, shuffle=False, num_workers=4, pin_memory=True)
+    train_loader = DataLoader(train_dataset, batch_size=args.batch_size, shuffle=True, num_workers=0, pin_memory=False)
+    val_loader = DataLoader(val_dataset, batch_size=args.batch_size, shuffle=False, num_workers=0, pin_memory=False)
+    
+    print(f"DEBUG: Train Dataset Len: {len(train_dataset)}")
+    print(f"DEBUG: Train Loader Len: {len(train_loader)}")
+    print(f"DEBUG: Batch Size: {args.batch_size}")
     
     # Model
     model = SNUNet(3, 1).to(device) # num_classes=1 for binary (using BCE)

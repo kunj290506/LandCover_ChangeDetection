@@ -11,19 +11,52 @@ data/
 # Model Checkpoints
 checkpoints/
 *.pth
-*.pt
-
 # Outputs
 output/
 output.tif
 
-# Python
+# Python cache and compiled files
 __pycache__/
 *.py[cod]
 *$py.class
-venv/
-.env
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
 
-# IDE
+# Virtual environments
+env/
+venv/
+ENV/
+.venv/
+
+# Model checkpoints and outputs
+checkpoints/
+checkpoints_laptop/
+*.pth
+*.pt
+*.ckpt
+
+# Data folders
+data/raw/
+output/
+
+# IDE and editor files
 .vscode/
 .idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Jupyter notebooks checkpoints
+.ipynb_checkpoints/
+
+# Training logs
+*.log
+wandb/
+runs/

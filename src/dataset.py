@@ -7,6 +7,8 @@ import torchvision.transforms.functional as TF
 import random
 from PIL import Image
 
+import torchvision.transforms as transforms
+
 class ChangeDetectionDataset(Dataset):
     def __init__(self, root_dir, list_path, mode='train', patch_size=256, transform=None):
         """
@@ -65,7 +67,7 @@ class ChangeDetectionDataset(Dataset):
     def _transform(self, img1, img2, label):
         # Random Crop
         if random.random() > 0.5:
-            i, j, h, w = TF.RandomCrop.get_params(img1, output_size=(self.patch_size, self.patch_size))
+            i, j, h, w = transforms.RandomCrop.get_params(img1, output_size=(self.patch_size, self.patch_size))
             img1 = TF.crop(img1, i, j, h, w)
             img2 = TF.crop(img2, i, j, h, w)
             label = TF.crop(label, i, j, h, w)

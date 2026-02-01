@@ -1,3 +1,6 @@
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
 from models.attention import CBAM
 
 # Basic Convolution Block (Modified to optionally include CBAM)
@@ -50,10 +53,14 @@ class SNUNet(nn.Module):
         self.up = nn.Upsample(scale_factor=2, mode='bilinear', align_corners=True)
         
         # Node 0_1
-        self.conv0_1 = ConvBlock(base_channel*2 + base_channel*2, base_channel, use_cbam=use_attention) 
-        self.conv1_1 = ConvBlock(base_channel*4 + base_channel*4, base_channel * 2, use_cbam=use_attention)
-        self.conv2_1 = ConvBlock(base_channel*8 + base_channel*8, base_channel * 4, use_cbam=use_attention)
-        self.conv3_1 = ConvBlock(base_channel*16 + base_channel*16, base_channel * 8, use_cbam=use_attention)
+        # Inputs: E1_0(C)+E2_0(C) + Up(E1_1)(2C)+Up(E2_1)(2C) = 6C
+        self.conv0_1 = ConvBlock(base_channel*2 + base_channel*4, base_channel, use_cbam=use_attention) 
+        # Inputs: E1_1(2C)+E2_1(2C) + Up(E1_2)(4C)+Up(E2_2)(4C) = 12C
+        self.conv1_1 = ConvBlock(base_channel*4 + base_channel*8, base_channel * 2, use_cbam=use_attention)
+        # Inputs: E1_2(4C)+E2_2(4C) + Up(E1_3)(8C)+Up(E2_3)(8C) = 24C
+        self.conv2_1 = ConvBlock(base_channel*8 + base_channel*16, base_channel * 4, use_cbam=use_attention)
+        # Inputs: E1_3(8C)+E2_3(8C) + Up(E1_4)(16C)+Up(E2_4)(16C) = 48C
+        self.conv3_1 = ConvBlock(base_channel*16 + base_channel*32, base_channel * 8, use_cbam=use_attention)
 
         # Node 0_2
         self.conv0_2 = ConvBlock(base_channel*2 + base_channel*2 + base_channel, base_channel, use_cbam=use_attention)
