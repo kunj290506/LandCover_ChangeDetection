@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Workbench | LandCover AI</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700&family=Inter:wght@400;500;600&display=swap"
+        rel="stylesheet">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+
+<body style="background: var(--bg-secondary);">
+
+    <!-- APP NAVIGATION -->
+    <nav class="nav">
+        <a href="/" class="brand">
+            <div class="brand-dot"></div>
+            LandCover AI
+        </a>
+        <div class="nav-menu">
+            <span class="nav-link" style="color: var(--text-main); font-weight: 600;">Workbench Active</span>
+        </div>
+        <a href="/" class="btn"
+            style="background: transparent; color: var(--text-secondary); height: 40px; font-size: 14px;">Exit
+            Session</a>
+    </nav>
+
+    <!-- WORKBENCH WRAPPER -->
+    <div class="app-fullscreen">
+        <div class="app-container">
+
+            <!-- CONTROLS SIDEBAR -->
+            <div class="app-controls">
+                <h3>Analysis Console</h3>
+                <p class="small-text" style="margin-bottom: 32px;">Initialize SNUNet-CBAM sequence.</p>
+
+                <!-- Drop Zone 1 -->
+                <div class="upload-zone" id="dropZone1" role="button" tabindex="0" aria-label="Upload Time 1 Image">
+                    <input type="file" id="input1" hidden accept="image/*">
+                    <div class="upload-content">
+                        <div class="label-bold">Input T1</div>
+                        <div class="label-sub">Select Pre-Event Source</div>
+                    </div>
+                    <img id="preview1" alt="Preview T1" style="display:none; width: 100%; border-radius: 8px;">
+                </div>
+
+                <!-- Drop Zone 2 -->
+                <div class="upload-zone" id="dropZone2" role="button" tabindex="0" aria-label="Upload Time 2 Image">
+                    <input type="file" id="input2" hidden accept="image/*">
+                    <div class="upload-content">
+                        <div class="label-bold">Input T2</div>
+                        <div class="label-sub">Select Post-Event Source</div>
+                    </div>
+                    <img id="preview2" alt="Preview T2" style="display:none; width: 100%; border-radius: 8px;">
+                </div>
+
+                <button id="analyzeBtn" class="btn btn-block" disabled>Run Change Detection</button>
+            </div>
+
+            <!-- RESULTS DISPLAY -->
+            <div class="app-display" id="resultsArea">
+                <!-- Empty State -->
+                <div id="emptyState" class="empty-state"
+                    style="height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--text-muted);">
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+                        style="opacity: 0.2; margin-bottom: 16px;">
+                        <path
+                            d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
+                        <polyline points="3.27 6.96 12 12.01 20.73 6.96" />
+                        <line x1="12" y1="22.08" x2="12" y2="12" />
+                    </svg>
+                    <div>Ready for input streams</div>
+                </div>
+
+                <!-- Result Content -->
+                <div id="resultsContainer" class="results-container"
+                    style="display: none; opacity: 0; transition: opacity 0.5s ease;">
+                    <div class="result-header">
+                        <span class="status-indicator">SEQUENCE COMPLETE</span>
+                        <span id="valTime" class="time-readout">0.3s</span>
+                    </div>
+
+                    <div class="visuals-grid">
+                        <div>
+                            <div class="viz-label">CHANGE MASK</div>
+                            <img id="resMask" alt="Generated Change Mask" src="" class="result-img">
+                        </div>
+                        <div>
+                            <div class="viz-label">OVERLAY COMPOSITE</div>
+                            <img id="resOverlay" alt="Generated Overlay" src="" class="result-img">
+                        </div>
+                    </div>
+
+                    <div class="metrics-row">
+                        <div class="metric-block">
+                            <div class="metric-label">CHANGED PIXELS</div>
+                            <div class="metric-val" id="valArea">--</div>
+                        </div>
+                        <div class="metric-block">
+                            <div class="metric-label">PERCENTAGE</div>
+                            <div class="metric-val" id="valPercent">--</div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+
+</html>

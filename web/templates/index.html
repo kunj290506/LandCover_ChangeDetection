@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LandCover AI | Autonomous Change Detection</title>
+  <meta name="description" content="LandCover AI: Autonomous sub-meter satellite change detection for enterprise.">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700&family=Inter:wght@400;500;600&display=swap"
+    rel="stylesheet">
+
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+
+<body>
+
+  <!-- NAVIGATION -->
+  <nav class="nav">
+    <a href="/" class="brand">
+      <div class="brand-dot"></div>
+      LandCover AI
+    </a>
+    <div class="nav-menu">
+      <a href="#how" class="nav-link">Methodology</a>
+      <a href="#impact" class="nav-link">Global Impact</a>
+    </div>
+    <a href="/app" class="btn btn-primary" style="height: 40px; padding: 0 24px; font-size: 14px;">Launch Console</a>
+  </nav>
+
+  <!-- HERO SECTION -->
+  <header class="hero">
+    <div class="container text-center">
+      <h1>Autonomous detection<br>at planetary scale.</h1>
+      <p style="margin-top: 32px;" class="fade-in">
+        Leverage the SNUNet-CBAM architecture to identify<br>sub-meter environmental changes.
+      </p>
+
+      <div class="hero-media reveal-up">
+        <!-- Hero: High Altitude Urban/Coast -->
+        <img src="https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?auto=format&fit=crop&q=80&w=2000"
+          alt="Aerial view of urban city grid and coastline" style="width: 100%; height: 100%; object-fit: cover;">
+      </div>
+    </div>
+  </header>
+
+  <!-- STICKY SCROLL SECTION (How It Works) -->
+  <section id="how" class="sticky-wrapper">
+    <div class="sticky-container">
+
+      <!-- LEFT: SCROLLING TEXT -->
+      <div class="text-column">
+
+        <!-- STEP 01 -->
+        <div class="text-step active" data-index="0">
+          <span class="step-num">01. Precision</span>
+          <h2>Sub-Meter Accuracy</h2>
+          <p class="step-desc">
+            Traditional satellite analysis fails with clouds and shadows.
+            Our Semantic Attention Network (SNUNet) understands the <strong>structure</strong> of the land, filtering
+            out noise to find true changes.
+          </p>
+        </div>
+
+        <!-- STEP 02 -->
+        <div class="text-step" data-index="1">
+          <span class="step-num">02. Velocity</span>
+          <h2>Automated Pipeline</h2>
+          <p class="step-desc">
+            Stop drawing polygons by hand. Drop two GeoTIFFs into the engine and get a vector-ready Change Mask in under
+            400ms.
+            <br>Designed for high-throughput enterprise workflows.
+          </p>
+        </div>
+
+        <!-- STEP 03 -->
+        <div class="text-step" data-index="2">
+          <span class="step-num">03. Impact</span>
+          <h2>Global Intelligence</h2>
+          <p class="step-desc">
+            From urban sprawl monitoring to deforestation alerts. Transform raw pixels into actionable policy decisions.
+            <br>Scalable from a single block to an entire continent.
+          </p>
+        </div>
+
+      </div>
+
+      <!-- RIGHT: STICKY IMAGES -->
+      <div class="image-column">
+        <div class="image-stack">
+          <!-- Image 1: Detailed City Grid (NY style) -->
+          <img src="https://images.unsplash.com/photo-1480714378408-67cf0d13bc1b?auto=format&fit=crop&q=80&w=1000"
+            class="sticky-img active" alt="Top-down aerial view of organized city infrastructure">
+
+          <!-- Image 2: Digital/Data Network (Abstract Velocity) -->
+          <img src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&q=80&w=1000"
+            class="sticky-img" alt="Digital data network overlay on earth">
+
+          <!-- Image 3: Dense Forest (Environmental) -->
+          <img src="https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&q=80&w=1000"
+            class="sticky-img" alt="Vast green forest landscape">
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- CTA FOOTER -->
+  <section class="section text-center" style="padding-bottom: 120px;">
+    <div class="container">
+      <h2 style="margin-bottom: 32px;">Ready to analyze your data?</h2>
+      <a href="/app" class="btn btn-primary" style="height: 56px; padding: 0 40px; font-size: 16px;">Initialize
+        Workbench</a>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="container">
+      <div class="brand-center">
+        <div class="brand-dot"></div>
+        LandCover AI
+      </div>
+      <p class="copyright">© 2026 LandCover Systems.</p>
+    </div>
+  </footer>
+
+  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+
+</html>
