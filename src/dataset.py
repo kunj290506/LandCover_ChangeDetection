@@ -54,7 +54,16 @@ class ChangeDetectionDataset(Dataset):
         # To Tensor
         img1 = TF.to_tensor(img1)
         img2 = TF.to_tensor(img2)
+        # For label: convert to tensor and ensure binary (0 or 1)
+        # TF.to_tensor scales by 255, so 0->0, 255->1, 1->0.004
         label = TF.to_tensor(label)
+        # If original labels were 0/1 (not 0/255), they become 0/0.004
+        # Check and fix: if max < 0.1, the original was 0/1, so threshold at 0.001
+        if label.max() > 0 and label.max() < 0.1:
+            label = (label > 0.001).float()
+        elif label.max() > 0.1:
+            # Original was 0/255, now 0/1, threshold at 0.5
+            label = (label > 0.5).float()
 
         # Normalize (custom or ImageNet statistics)
         mean = [0.485, 0.456, 0.406]
