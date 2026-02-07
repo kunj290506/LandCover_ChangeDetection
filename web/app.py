@@ -36,6 +36,8 @@ def get_detector():
         if not model_path.exists():
             # Fallback paths
             model_path = Path(__file__).parent.parent / 'best_model.pth'
+            if not model_path.exists():
+                 model_path = Path(__file__).parent.parent / 'checkpoints_optimized' / 'best_model.pth'
         detector = ChangeDetector(str(model_path) if model_path.exists() else None)
     return detector
 
