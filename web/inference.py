@@ -27,7 +27,7 @@ class ChannelAttention(nn.Module):
         super().__init__()
         self.avg_pool = nn.AdaptiveAvgPool2d(1)
         self.max_pool = nn.AdaptiveMaxPool2d(1)
-        self.fc = nn.Sequential(
+        self.mlp = nn.Sequential(
             nn.Conv2d(in_planes, in_planes // ratio, 1, bias=False),
             nn.ReLU(),
             nn.Conv2d(in_planes // ratio, in_planes, 1, bias=False)
@@ -35,29 +35,36 @@ class ChannelAttention(nn.Module):
         self.sigmoid = nn.Sigmoid()
 
     def forward(self, x):
-        return self.sigmoid(self.fc(self.avg_pool(x)) + self.fc(self.max_pool(x)))
+        return self.sigmoid(self.mlp(self.avg_pool(x)) + self.mlp(self.max_pool(x)))
 
 
 class SpatialAttention(nn.Module):
     def __init__(self, kernel_size=7):
         super().__init__()
-        self.conv = nn.Conv2d(2, 1, kernel_size, padding=kernel_size//2, bias=False)
+        self.spatial = nn.Sequential(
+            nn.Conv2d(2, 1, kernel_size, padding=kernel_size//2, bias=False),
+            nn.BatchNorm2d(1)
+        )
         self.sigmoid = nn.Sigmoid()
 
     def forward(self, x):
         avg_out = torch.mean(x, dim=1, keepdim=True)
         max_out, _ = torch.max(x, dim=1, keepdim=True)
-        return self.sigmoid(self.conv(torch.cat([avg_out, max_out], dim=1)))
+        x_out = self.spatial(torch.cat([avg_out, max_out], dim=1))
+        return self.sigmoid(x_out)
 
 
 class CBAM(nn.Module):
     def __init__(self, in_planes):
         super().__init__()
-        self.ca = ChannelAttention(in_planes)
-        self.sa = SpatialAttention()
+        self.ChannelGate = ChannelAttention(in_planes)
+        self.SpatialGate = SpatialAttention()
 
     def forward(self, x):
-        return x * self.sa(x * self.ca(x))
+        x_out = self.ChannelGate(x)
+        x = x * x_out
+        x_out = self.SpatialGate(x)
+        return x * x_out
 
 
 class ConvBlock(nn.Module):
@@ -171,12 +178,19 @@ class ChangeDetector:
             
             # Handle different checkpoint formats
             if 'model_state_dict' in checkpoint:
-                self.model.load_state_dict(checkpoint['model_state_dict'])
+                state_dict = checkpoint['model_state_dict']
             elif 'model' in checkpoint:
-                self.model.load_state_dict(checkpoint['model'])
+                state_dict = checkpoint['model']
             else:
-                self.model.load_state_dict(checkpoint)
+                state_dict = checkpoint
             
+            # Remove 'module.' prefix if present (DataParallel)
+            new_state_dict = {}
+            for k, v in state_dict.items():
+                name = k[7:] if k.startswith('module.') else k
+                new_state_dict[name] = v
+            
+            self.model.load_state_dict(new_state_dict)
             self.model.to(self.device)
             self.model.eval()
             self.model_loaded = True

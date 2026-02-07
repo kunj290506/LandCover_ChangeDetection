@@ -1,18 +1,16 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LandCover AI | Satellite Change Detection</title>
-    <meta name="description"
-        content="AI-powered satellite imagery change detection. Detect environmental changes with deep learning precision.">
+    <title>LandCover AI | Precision Change Detection</title>
 
-    <!-- Fonts -->
+    <!-- Fonts: SF Pro Display clone (Inter) for now, as we can't serve local fonts easily without files -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
-        href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=SF+Pro+Display:wght@500;600;700&display=swap"
         rel="stylesheet">
 
     <!-- Icons -->
@@ -21,259 +19,180 @@
     <!-- CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 
-    <!-- Animation Libraries -->
+    <!-- Smooth Scroll -->
+    <script src="https://unpkg.com/@studio-freight/lenis@1.0.29/dist/lenis.min.js"></script>
+    <!-- GSAP -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/gh/studio-freight/lenis@1.0.29/bundled/lenis.min.js"></script>
-    <script src="https://unpkg.com/split-type"></script>
 </head>
 
 <body class="landing-page">
-
     <!-- Custom Cursor -->
-    <div class="cursor-dot" id="cursorDot"></div>
-    <div class="cursor-outline" id="cursorOutline"></div>
+    <div class="cursor"></div>
+    <div class="cursor-follower"></div>
 
-    <!-- Navigation -->
-    <nav class="navbar" id="navbar">
-        <div class="nav-container">
-            <a href="/" class="logo">
-                <div class="logo-icon">
-                    <i class="fas fa-satellite"></i>
-                </div>
-                <span class="logo-text">LandCoverAI</span>
+    <!-- Floating Dynamic Navbar -->
+    <div class="navbar-container">
+        <nav class="navbar">
+            <a href="/" class="nav-logo">
+                <i class="fas fa-satellite"></i>
+                <span>LandCover AI</span>
             </a>
 
             <div class="nav-links">
-                <a href="#features" class="nav-link"><span>Features</span></a>
-                <a href="#technology" class="nav-link"><span>Stack</span></a>
-                <a href="#about" class="nav-link"><span>About</span></a>
+                <a href="#features" class="nav-link">Features</a>
+                <a href="#technology" class="nav-link">Technology</a>
+                <a href="#about" class="nav-link">About</a>
             </div>
 
-            <div class="nav-right">
-                <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
-                    <i class="fas fa-sun theme-icon sun"></i>
-                    <i class="fas fa-moon theme-icon moon"></i>
-                </button>
+            <a href="{{ url_for('application') }}" class="nav-cta">
+                Launch Console
+            </a>
+        </nav>
+    </div>
 
-                <a href="/app" class="nav-cta">
-                    <span>Launch Console</span>
-                    <i class="fas fa-arrow-right"></i>
-                </a>
-            </div>
+    <!-- Main Content -->
+    <main>
 
-            <button class="mobile-toggle" id="mobileToggle">
-                <span></span>
-                <span></span>
-                <span></span>
-            </button>
-        </div>
-    </nav>
+        <!-- Hero Section -->
+        <section class="hero-section">
+            <div class="hero-bg-visual"></div> <!-- Animated Blob -->
 
-    <!-- Hero Section -->
-    <section class="hero" id="hero">
-        <div class="hero-bg-overlay"></div>
-        <div class="hero-content">
-            <div class="hero-header">
-                <p class="hero-label reveal-text">Satellite Intelligence</p>
+            <div class="hero-content">
                 <h1 class="hero-title">
-                    <div class="title-line">Detect Change.</div>
-                    <div class="title-line">Analyze Impact.</div>
+                    Satellite Intelligence.<br>
+                    Simplified.
                 </h1>
-            </div>
+                <p class="hero-subtitle">
+                    The fastest way to detect environmental changes and urban growth.
+                </p>
 
-            <p class="hero-description reveal-text">
-                Leveraging <strong>SNUNet-CBAM</strong> deep learning architecture to identify
-                urban expansion, deforestation, and environmental shifts with pixel-level precision.
-            </p>
-
-            <div class="hero-actions reveal-text">
-                <a href="/app" class="primary-btn">
-                    <span>Start Detection</span>
-                    <i class="fas fa-arrow-right"></i>
-                </a>
-                <a href="#features" class="secondary-btn">
-                    <span>Explore Features</span>
-                </a>
-            </div>
-
-            <div class="hero-stats">
-                <div class="stat-item reveal-text">
-                    <div class="stat-value" data-value="95.8">0</div>
-                    <div class="stat-label">% Accuracy</div>
-                </div>
-                <div class="stat-item reveal-text">
-                    <div class="stat-value" data-value="0.4">0</div>
-                    <div class="stat-label">s Inference</div>
-                </div>
-                <div class="stat-item reveal-text">
-                    <div class="stat-value" data-value="11.7">0</div>
-                    <div class="stat-label">M Params</div>
+                <div class="hero-actions">
+                    <a href="{{ url_for('application') }}" class="btn btn-primary"
+                        style="padding: 18px 40px; font-size: 19px;">
+                        Open Workspace <i class="fas fa-arrow-right" style="margin-left: 10px;"></i>
+                    </a>
                 </div>
             </div>
-        </div>
+        </section>
 
-    </section>
-
-    <!-- Features Grid -->
-    <section class="section features-section" id="features">
-        <div class="section-header">
-            <span class="section-tag">Capabilities</span>
-            <h2 class="section-title split-text">Intelligence at Scale</h2>
-        </div>
-
-        <div class="features-grid">
-            <div class="feature-card">
-                <div class="card-border"></div>
-                <div class="card-content">
-                    <div class="feature-icon"><i class="fas fa-layer-group"></i></div>
-                    <h3>Bi-Temporal Analysis</h3>
-                    <p>Compare two satellite images from different time points to automatically detect structural and
-                        environmental changes.</p>
-                </div>
-            </div>
-
-            <div class="feature-card">
-                <div class="card-border"></div>
-                <div class="card-content">
-                    <div class="feature-icon"><i class="fas fa-brain"></i></div>
-                    <h3>Deep Learning Core</h3>
-                    <p>Powered by SNUNet-CBAM (Siamese Nested U-Net), utilizing attention mechanisms to focus on
-                        relevant changes.</p>
-                </div>
-            </div>
-
-            <div class="feature-card">
-                <div class="card-border"></div>
-                <div class="card-content">
-                    <div class="feature-icon"><i class="fas fa-bolt"></i></div>
-                    <h3>Real-Time Inference</h3>
-                    <p>Optimized CUDA acceleration delivers results in under 400ms, making live processing feasible.</p>
-                </div>
-            </div>
-
-            <div class="feature-card">
-                <div class="card-border"></div>
-                <div class="card-content">
-                    <div class="feature-icon"><i class="fas fa-chart-pie"></i></div>
-                    <h3>Precise Metrics</h3>
-                    <p>Calculate changed area percentages, IoU scores, and pixel-wise accuracy instantly.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Tech Stack Vertical Parallax -->
-    <section class="section tech-section" id="technology">
-        <div class="container">
-            <div class="tech-layout">
-                <div class="tech-info">
-                    <span class="section-tag">Technology</span>
-                    <h2 class="section-title split-text">Built for <br>Accuracy</h2>
-                    <p class="section-desc">
-                        A robust stack combining state-of-the-art computer vision models with
-                        a responsive modern web interface.
-                    </p>
+        <!-- Bento Grid Features -->
+        <section id="features" class="features-section">
+            <div class="section-max">
+                <div class="section-header">
+                    <h2 class="section-title">Analysis. Reimagined.</h2>
+                    <p class="section-desc">Everything you need to analyze temporal geospatial data, packed into a
+                        powerful interface.</p>
                 </div>
 
-                <div class="tech-list">
-                    <div class="tech-item">
-                        <span class="tech-num">01</span>
-                        <div class="tech-detail">
-                            <h4>PyTorch & Vision</h4>
-                            <p>Core tensor operations and model architecture definition.</p>
+                <div class="bento-grid">
+                    <!-- Feature 1: Large -->
+                    <div class="bento-item bento-span-2">
+                        <div class="bento-content">
+                            <div class="bento-icon-box">
+                                <i class="fas fa-layer-group"></i>
+                            </div>
+                            <span class="bento-label">Smart Processing</span>
+                            <h3 class="bento-head">Deep Learning Models</h3>
+                            <p class="bento-sub">Proprietary UNet architecture trained on diverse landscapes for
+                                pixel-perfect segmentation.</p>
                         </div>
+                        <!-- Visual Map Pattern -->
+                        <div class="bento-visual viz-map-pattern"></div>
                     </div>
-                    <div class="tech-item">
-                        <span class="tech-num">02</span>
-                        <div class="tech-detail">
-                            <h4>SNUNet-CBAM</h4>
-                            <p>Siamese network ensuring multiscale feature extraction.</p>
+
+                    <!-- Feature 2: Speed -->
+                    <div class="bento-item">
+                        <div class="bento-content">
+                            <div class="bento-icon-box">
+                                <i class="fas fa-bolt"></i>
+                            </div>
+                            <span class="bento-label">Performance</span>
+                            <h3 class="bento-head">Lightning Fast</h3>
+                            <p class="bento-sub">Process 4k resolution imagery in under 2 seconds.</p>
                         </div>
+                        <div class="bento-visual viz-speed-lines"></div>
                     </div>
-                    <div class="tech-item">
-                        <span class="tech-num">03</span>
-                        <div class="tech-detail">
-                            <h4>Flask & Python</h4>
-                            <p>Lightweight backend server for handling inference requests.</p>
+
+                    <!-- Feature 3: Precision -->
+                    <div class="bento-item">
+                        <div class="bento-content">
+                            <div class="bento-icon-box">
+                                <i class="fas fa-bullseye"></i>
+                            </div>
+                            <span class="bento-label">Accuracy</span>
+                            <h3 class="bento-head">Sub-pixel Precision</h3>
+                            <p class="bento-sub">Detect changes as small as 5 meters in any terrain.</p>
                         </div>
+                        <div class="bento-visual viz-radar"></div>
                     </div>
-                    <div class="tech-item">
-                        <span class="tech-num">04</span>
-                        <div class="tech-detail">
-                            <h4>GSAP & WebGL</h4>
-                            <p>High-performant animations and interactive visualization.</p>
+
+                    <!-- Feature 4: Large -->
+                    <div class="bento-item bento-span-2">
+                        <div class="bento-content">
+                            <div class="bento-content-inner">
+                                <div class="bento-icon-box">
+                                    <i class="fas fa-sliders-h"></i>
+                                </div>
+                                <span class="bento-label">Control</span>
+                                <h3 class="bento-head">Interactive Visualizer</h3>
+                                <p class="bento-sub">Seamlessly compare temporal datasets with zero latency.</p>
+                            </div>
+                        </div>
+                        <div class="bento-visual viz-gradient-flow"></div>
+                    </div>
+                </div>
+            </div>
+            <!-- Technology Section -->
+            <section id="technology" class="tech-section">
+                <div class="section-max">
+                    <div class="section-header">
+                        <h2 class="section-title">Built for Performance.</h2>
+                        <p class="section-desc">Our stack is optimized for low-latency inference on high-resolution
+                            satellite
+                            imagery.</p>
+                    </div>
+                    <div class="tech-grid">
+                        <div class="tech-card">
+                            <i class="fab fa-python tech-icon"></i>
+                            <h4>PyTorch Engine</h4>
+                            <p>State-of-the-art neural networks for pixel-level segmentation.</p>
+                        </div>
+                        <div class="tech-card">
+                            <i class="fas fa-brain tech-icon"></i>
+                            <h4>DeepCover v2</h4>
+                            <p>Optimized for multi-temporal feature extraction.</p>
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
-    </section>
+            </section>
 
-    <!-- Project Context -->
-    <section class="section about-section" id="about">
-        <div class="about-container">
-            <div class="about-image-wrapper">
-                <div class="about-image-placeholder"></div>
-                <!-- Replace with actual satellite imagery if available -->
-            </div>
-            <div class="about-content">
-                <span class="section-tag">About</span>
-                <h2 class="section-title split-text">The Project</h2>
-                <div class="text-block">
-                    <p>
-                        Originally developed for the ISRO submission challenge, this tool democratizes
-                        access to complex change detection algorithms.
-                    </p>
-                    <p>
-                        Traditional methods rely on manual inspection or simple pixel subtraction.
-                        Our approach uses semantic understanding to ignore seasonal noise and focus
-                        on structural changes—crucial for urban planning and disaster recovery.
-                    </p>
-                </div>
-
-                <div class="specs-grid">
-                    <div class="spec-box">
-                        <span class="spec-head">Dataset</span>
-                        <span class="spec-data">LEVIR-CD</span>
-                    </div>
-                    <div class="spec-box">
-                        <span class="spec-head">F1-Score</span>
-                        <span class="spec-data">0.89</span>
-                    </div>
-                    <div class="spec-box">
-                        <span class="spec-head">License</span>
-                        <span class="spec-data">MIT</span>
+            <!-- About Section -->
+            <section id="about" class="about-section">
+                <div class="section-max">
+                    <div class="section-header">
+                        <h2 class="section-title">The Mission.</h2>
+                        <p class="section-desc">Democratizing access to geospatial intelligence for environmental
+                            conservation and urban planning.</p>
                     </div>
                 </div>
-            </div>
-        </div>
-    </section>
+            </section>
 
-    <!-- Footer -->
-    <footer class="footer">
-        <div class="footer-container">
-            <div class="footer-top">
-                <div class="footer-brand">
-                    <span class="footer-logo">LandCoverAI</span>
-                    <p>Next-gen satellite monitoring.</p>
+            <!-- Footer -->
+            <footer class="footer">
+                <div class="footer-content">
+                    <div class="footer-left">
+                        <p>&copy; 2024 LandCover AI. All rights reserved.</p>
+                    </div>
+                    <div class="footer-right">
+                        <a href="#" style="margin-left: 20px;">Privacy</a>
+                        <a href="#" style="margin-left: 20px;">Terms</a>
+                    </div>
                 </div>
-                <div class="footer-cta">
-                    <h3>Ready to analyze?</h3>
-                    <a href="/app" class="footer-btn">Launch Console</a>
-                </div>
-            </div>
-            <div class="footer-bottom">
-                <span>&copy; 2024 LandCover AI. All rights reserved.</span>
-                <div class="footer-links">
-                    <a href="https://github.com/kunj290506/LandCover_ChangeDetection">GitHub</a>
-                    <a href="#">Documentation</a>
-                </div>
-            </div>
-        </div>
-    </footer>
+            </footer>
 
-    <!-- Scripts -->
+    </main>
+
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 </body>
 
