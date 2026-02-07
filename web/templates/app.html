@@ -1,23 +1,27 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Console | LandCover AI</title>
-    
+
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-    
+    <link
+        href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+
     <!-- Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+
     <!-- Styles -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
+
 <body class="app-page">
-    
+
     <!-- App Background -->
     <div class="app-bg">
         <div class="grid-pattern"></div>
@@ -30,7 +34,7 @@
                 <div class="logo-icon">
                     <i class="fas fa-satellite"></i>
                 </div>
-                <span class="logo-text">LandCover<span class="highlight">AI</span></span>
+                <span>LandCoverAI</span>
             </a>
             <div class="nav-divider"></div>
             <span class="nav-title">
@@ -38,12 +42,16 @@
                 Console
             </span>
         </div>
-        
+
         <div class="app-nav-right">
             <div class="status-indicator" id="statusIndicator">
                 <span class="status-dot"></span>
                 <span class="status-text">Ready</span>
             </div>
+            <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+                <i class="fas fa-sun theme-icon sun"></i>
+                <i class="fas fa-moon theme-icon moon"></i>
+            </button>
             <a href="/" class="nav-btn">
                 <i class="fas fa-times"></i>
             </a>
@@ -60,58 +68,64 @@
                     Input Controls
                 </h2>
             </div>
-            
+
             <div class="panel-content">
                 <!-- Upload Zone 1 -->
-                <div class="upload-section">
-                    <label class="upload-label">
-                        <span class="label-dot blue"></span>
-                        Time Point 1 (Before)
-                    </label>
-                    <div class="upload-zone" id="dropZone1" data-index="1">
+                <div class="upload-group">
+                    <div class="upload-header">
+                        <span class="step-badge">1</span>
+                        <span class="step-label">Before Image</span>
+                    </div>
+
+                    <div class="upload-zone simple" id="dropZone1">
                         <input type="file" id="input1" hidden accept="image/*">
-                        <div class="upload-placeholder" id="placeholder1">
-                            <div class="upload-icon">
-                                <i class="fas fa-cloud-upload-alt"></i>
-                            </div>
-                            <span class="upload-text">Drop image or click to browse</span>
-                            <span class="upload-hint">PNG, JPG, TIFF supported</span>
+
+                        <!-- Empty State -->
+                        <div class="upload-empty" id="placeholder1">
+                            <i class="fas fa-plus"></i>
+                            <span>Select Image</span>
                         </div>
-                        <div class="upload-preview" id="previewContainer1" style="display: none;">
-                            <img id="preview1" alt="Preview T1">
-                            <button class="remove-btn" data-index="1">
+
+                        <!-- Filled State -->
+                        <div class="upload-filled" id="previewContainer1" style="display: none;">
+                            <img id="preview1" class="file-thumb" alt="Preview T1">
+                            <div class="file-info">
+                                <span class="file-name" id="fileName1">image.png</span>
+                                <span class="file-meta" id="fileMeta1">2.4 MB • PNG</span>
+                            </div>
+                            <button class="remove-btn-simple" data-index="1">
                                 <i class="fas fa-times"></i>
                             </button>
-                            <div class="preview-overlay">
-                                <i class="fas fa-check-circle"></i>
-                            </div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Upload Zone 2 -->
-                <div class="upload-section">
-                    <label class="upload-label">
-                        <span class="label-dot green"></span>
-                        Time Point 2 (After)
-                    </label>
-                    <div class="upload-zone" id="dropZone2" data-index="2">
+                <div class="upload-group">
+                    <div class="upload-header">
+                        <span class="step-badge">2</span>
+                        <span class="step-label">After Image</span>
+                    </div>
+
+                    <div class="upload-zone simple" id="dropZone2">
                         <input type="file" id="input2" hidden accept="image/*">
-                        <div class="upload-placeholder" id="placeholder2">
-                            <div class="upload-icon">
-                                <i class="fas fa-cloud-upload-alt"></i>
-                            </div>
-                            <span class="upload-text">Drop image or click to browse</span>
-                            <span class="upload-hint">PNG, JPG, TIFF supported</span>
+
+                        <!-- Empty State -->
+                        <div class="upload-empty" id="placeholder2">
+                            <i class="fas fa-plus"></i>
+                            <span>Select Image</span>
                         </div>
-                        <div class="upload-preview" id="previewContainer2" style="display: none;">
-                            <img id="preview2" alt="Preview T2">
-                            <button class="remove-btn" data-index="2">
+
+                        <!-- Filled State -->
+                        <div class="upload-filled" id="previewContainer2" style="display: none;">
+                            <img id="preview2" class="file-thumb" alt="Preview T2">
+                            <div class="file-info">
+                                <span class="file-name" id="fileName2">image.png</span>
+                                <span class="file-meta" id="fileMeta2">2.4 MB • PNG</span>
+                            </div>
+                            <button class="remove-btn-simple" data-index="2">
                                 <i class="fas fa-times"></i>
                             </button>
-                            <div class="preview-overlay">
-                                <i class="fas fa-check-circle"></i>
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -128,7 +142,7 @@
                             <span>Processing...</span>
                         </div>
                     </button>
-                    
+
                     <button id="clearBtn" class="btn-clear">
                         <i class="fas fa-trash-alt"></i>
                         <span>Clear All</span>
@@ -179,7 +193,7 @@
                 </div>
                 <h3>Ready for Analysis</h3>
                 <p>Upload two satellite images to begin change detection</p>
-                
+
                 <div class="quick-tips">
                     <div class="tip">
                         <i class="fas fa-lightbulb"></i>
@@ -316,14 +330,14 @@
                     Metrics
                 </h2>
             </div>
-            
+
             <div class="panel-content">
                 <!-- Metrics will be populated by JavaScript -->
                 <div class="metrics-placeholder">
                     <i class="fas fa-chart-pie"></i>
                     <span>Run analysis to see metrics</span>
                 </div>
-                
+
                 <div class="metrics-content" id="metricsContent" style="display: none;">
                     <div class="metric-card primary">
                         <div class="metric-header">
@@ -335,7 +349,7 @@
                             <div class="bar-fill" id="changeBar"></div>
                         </div>
                     </div>
-                    
+
                     <div class="metric-card">
                         <div class="metric-header">
                             <span class="metric-label">Changed Pixels</span>
@@ -343,7 +357,7 @@
                         </div>
                         <div class="metric-value" id="metricPixels">0</div>
                     </div>
-                    
+
                     <div class="metric-card">
                         <div class="metric-header">
                             <span class="metric-label">Total Pixels</span>
@@ -351,7 +365,7 @@
                         </div>
                         <div class="metric-value" id="metricTotal">0</div>
                     </div>
-                    
+
                     <div class="metric-card">
                         <div class="metric-header">
                             <span class="metric-label">Confidence</span>
@@ -359,9 +373,9 @@
                         </div>
                         <div class="metric-value" id="metricConfidence">0%</div>
                     </div>
-                    
+
                     <div class="metric-divider"></div>
-                    
+
                     <div class="metric-card">
                         <div class="metric-header">
                             <span class="metric-label">Processing Time</span>
@@ -369,7 +383,7 @@
                         </div>
                         <div class="metric-value" id="metricTime">0ms</div>
                     </div>
-                    
+
                     <div class="metric-card">
                         <div class="metric-header">
                             <span class="metric-label">Image Dimensions</span>
@@ -388,4 +402,5 @@
     <!-- Scripts -->
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 </body>
+
 </html>

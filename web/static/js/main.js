@@ -1,137 +1,227 @@
 /**
- * LandCover AI - Modern Interactive UI
- * Version: 3.0
- * Features: Smooth animations, cursor effects, scroll reveals, comparison slider
+ * LandCover AI - Premium Interactive Experience
+ * Stack: GSAP, Lenis, Vanilla JS
  */
 
 document.addEventListener('DOMContentLoaded', () => {
     'use strict';
 
-    // ═══════════════════════════════════════════════════════════════════════════
-    // LANDING PAGE INTERACTIONS
-    // ═══════════════════════════════════════════════════════════════════════════
+    // Global Components
+    initTheme();
+    initCursor();
 
-    // Cursor Glow Effect
-    const cursorGlow = document.getElementById('cursorGlow');
-    if (cursorGlow) {
-        document.addEventListener('mousemove', (e) => {
-            cursorGlow.style.left = e.clientX + 'px';
-            cursorGlow.style.top = e.clientY + 'px';
+    // Route Logic
+    if (document.querySelector('.landing-page')) {
+        initLandingPage();
+    } else if (document.querySelector('.app-page')) {
+        initAppPage();
+    }
+});
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   GLOBAL COMPONENTS
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+function initTheme() {
+    const savedTheme = localStorage.getItem('landcover-theme');
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const initialTheme = savedTheme || (prefersDark ? 'dark' : 'light');
+
+    document.documentElement.setAttribute('data-theme', initialTheme);
+
+    const themeToggle = document.getElementById('themeToggle');
+    if (themeToggle) {
+        themeToggle.addEventListener('click', () => {
+            const current = document.documentElement.getAttribute('data-theme');
+            const next = current === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', next);
+            localStorage.setItem('landcover-theme', next);
+        });
+    }
+}
+
+function initCursor() {
+    const cursorDot = document.getElementById('cursorDot');
+    const cursorOutline = document.getElementById('cursorOutline');
+
+    if (!cursorDot || !cursorOutline || 'ontouchstart' in window) {
+        if (cursorDot) cursorDot.style.display = 'none';
+        if (cursorOutline) cursorOutline.style.display = 'none';
+        return;
+    }
+
+    // Mouse flow
+    window.addEventListener('mousemove', (e) => {
+        const posX = e.clientX;
+        const posY = e.clientY;
+
+        // Dot follows instantly
+        cursorDot.style.transform = `translate(${posX}px, ${posY}px) translate(-50%, -50%)`;
+
+        // Outline follows with lag (handled by CSS transition or simple JS loop)
+        // For smoother feel, we can use requestAnimationFrame or GSAP quickSetter
+        // Using simple GSAP for consistency if available, else direct
+        if (typeof gsap !== 'undefined') {
+            gsap.to(cursorOutline, {
+                x: posX,
+                y: posY,
+                duration: 0.15,
+                ease: "power2.out"
+            });
+        }
+    });
+
+    // Hover interactions
+    const hoverTargets = document.querySelectorAll('a, button, .feature-card, .upload-zone');
+    hoverTargets.forEach(el => {
+        el.addEventListener('mouseenter', () => document.body.classList.add('hovering'));
+        el.addEventListener('mouseleave', () => document.body.classList.remove('hovering'));
+    });
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   LANDING PAGE LOGIC (GSAP + Lenis)
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+function initLandingPage() {
+    // 1. Initialize Lenis Smooth Scroll
+    const lenis = new Lenis({
+        duration: 1.2,
+        easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+        smooth: true,
+        direction: 'vertical'
+    });
+
+    function raf(time) {
+        lenis.raf(time);
+        requestAnimationFrame(raf);
+    }
+    requestAnimationFrame(raf);
+
+    // Integrate ScrollTrigger with Lenis
+    if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
+        gsap.registerPlugin(ScrollTrigger);
+        // SplitType needs to be loaded
+    }
+
+    // 2. Hero Animations
+    initHeroAnimations();
+
+    // 3. Section Animations
+    initScrollAnimations();
+
+    // 4. Mobile Menu
+    const mobileToggle = document.getElementById('mobileToggle');
+    const navLinks = document.querySelector('.nav-links');
+    if (mobileToggle) {
+        mobileToggle.addEventListener('click', () => {
+            mobileToggle.classList.toggle('active');
+            navLinks.classList.toggle('active');
         });
     }
 
     // Navbar Scroll Effect
     const navbar = document.getElementById('navbar');
-    if (navbar) {
-        window.addEventListener('scroll', () => {
-            if (window.scrollY > 50) {
-                navbar.classList.add('scrolled');
-            } else {
-                navbar.classList.remove('scrolled');
-            }
-        });
-    }
+    window.addEventListener('scroll', () => {
+        if (window.scrollY > 50) navbar.classList.add('scrolled');
+        else navbar.classList.remove('scrolled');
+    });
+}
 
-    // Smooth Scroll for Anchor Links
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener('click', function(e) {
-            e.preventDefault();
-            const target = document.querySelector(this.getAttribute('href'));
-            if (target) {
-                target.scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'start'
-                });
-            }
+function initHeroAnimations() {
+    if (typeof gsap === 'undefined') return;
+
+    const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
+
+    // Split text logic would go here if we had the library loaded locally, 
+    // but assuming simple opacity/y translates for now
+
+    tl.from(".hero-label", {
+        y: 20,
+        opacity: 0,
+        duration: 1,
+        delay: 0.2
+    })
+        .from(".title-line", {
+            y: 100,
+            opacity: 0,
+            duration: 1.2,
+            stagger: 0.15,
+            ease: "power4.out"
+        }, "-=0.8")
+        .from(".hero-description", {
+            y: 20,
+            opacity: 0,
+            duration: 1
+        }, "-=0.6")
+        .from(".hero-actions > *", {
+            y: 20,
+            opacity: 0,
+            stagger: 0.1,
+            duration: 1
+        }, "-=0.8")
+        .from(".stat-item", {
+            y: 20,
+            opacity: 0,
+            stagger: 0.1,
+            duration: 1
+        }, "-=0.8");
+
+    // Animate stats numbers
+    const stats = document.querySelectorAll('.stat-value');
+    stats.forEach(stat => {
+        const val = parseFloat(stat.dataset.value);
+        gsap.to(stat, {
+            innerText: val,
+            duration: 2,
+            snap: { innerText: 0.1 },
+            ease: "power1.inOut"
         });
     });
+}
 
-    // Counter Animation
-    const counters = document.querySelectorAll('.counter');
-    if (counters.length > 0) {
-        const animateCounter = (counter) => {
-            const target = parseFloat(counter.dataset.target);
-            const isDecimal = target % 1 !== 0;
-            const duration = 2000;
-            const step = target / (duration / 16);
-            let current = 0;
+function initScrollAnimations() {
+    if (typeof gsap === 'undefined') return;
 
-            const updateCounter = () => {
-                current += step;
-                if (current < target) {
-                    counter.textContent = isDecimal ? current.toFixed(1) : Math.floor(current);
-                    requestAnimationFrame(updateCounter);
-                } else {
-                    counter.textContent = isDecimal ? target.toFixed(1) : target;
-                }
-            };
+    // Features Stagger
+    gsap.from(".feature-card", {
+        scrollTrigger: {
+            trigger: ".features-grid",
+            start: "top 80%",
+        },
+        y: 50,
+        opacity: 0,
+        duration: 0.8,
+        stagger: 0.1
+    });
 
-            updateCounter();
-        };
-
-        // Intersection Observer for counters
-        const counterObserver = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    animateCounter(entry.target);
-                    counterObserver.unobserve(entry.target);
-                }
-            });
-        }, { threshold: 0.5 });
-
-        counters.forEach(counter => counterObserver.observe(counter));
-    }
-
-    // Scroll Reveal Animation
-    const scrollElements = document.querySelectorAll('[data-scroll]');
-    if (scrollElements.length > 0) {
-        const scrollObserver = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('visible');
-                }
-            });
-        }, {
-            threshold: 0.1,
-            rootMargin: '0px 0px -50px 0px'
+    // Tech Stack
+    const techItems = document.querySelectorAll('.tech-item');
+    techItems.forEach((item, index) => {
+        gsap.from(item, {
+            scrollTrigger: {
+                trigger: item,
+                start: "top 85%",
+            },
+            x: -30,
+            opacity: 0,
+            duration: 0.6,
+            delay: index * 0.1
         });
+    });
+}
 
-        scrollElements.forEach(el => scrollObserver.observe(el));
-    }
+/* ═══════════════════════════════════════════════════════════════════════════
+   APP PAGE LOGIC (Change Detection)
+   ═══════════════════════════════════════════════════════════════════════════ */
 
-    // Timeline Progress
-    const timelineSteps = document.querySelectorAll('.timeline-step');
-    const timelineProgress = document.getElementById('timelineProgress');
-    
-    if (timelineSteps.length > 0 && timelineProgress) {
-        const timelineObserver = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('active');
-                    
-                    // Update progress bar
-                    const activeSteps = document.querySelectorAll('.timeline-step.active');
-                    const progress = (activeSteps.length / timelineSteps.length) * 100;
-                    timelineProgress.style.width = `${progress}%`;
-                }
-            });
-        }, { threshold: 0.5 });
-
-        timelineSteps.forEach(step => timelineObserver.observe(step));
-    }
-
-    // ═══════════════════════════════════════════════════════════════════════════
-    // APP PAGE INTERACTIONS
-    // ═══════════════════════════════════════════════════════════════════════════
-
-    // Application State
+function initAppPage() {
     const AppState = {
         files: [null, null],
         isProcessing: false,
         results: null
     };
 
-    // DOM Elements
     const elements = {
         dropZones: [document.getElementById('dropZone1'), document.getElementById('dropZone2')],
         inputs: [document.getElementById('input1'), document.getElementById('input2')],
@@ -147,453 +237,252 @@ document.addEventListener('DOMContentLoaded', () => {
         toastContainer: document.getElementById('toastContainer')
     };
 
-    // Check if we're on the app page
-    if (!elements.dropZones[0]) return;
-
-    // Initialize Upload Zones
+    // Initialize Drop Zones
     elements.dropZones.forEach((zone, index) => {
         if (!zone) return;
 
-        // Click to upload
         zone.addEventListener('click', (e) => {
-            if (!e.target.closest('.remove-btn')) {
-                elements.inputs[index].click();
-            }
+            if (!e.target.closest('.remove-btn-simple')) elements.inputs[index].click();
         });
 
-        // File input change
         elements.inputs[index].addEventListener('change', (e) => {
-            if (e.target.files.length) {
-                handleFile(e.target.files[0], index);
-            }
+            if (e.target.files.length) handleFile(e.target.files[0], index);
         });
 
-        // Drag and Drop
         zone.addEventListener('dragover', (e) => {
             e.preventDefault();
-            zone.classList.add('dragover');
+            zone.classList.add('drag-over');
         });
 
-        zone.addEventListener('dragleave', (e) => {
-            e.preventDefault();
-            zone.classList.remove('dragover');
-        });
+        zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
 
         zone.addEventListener('drop', (e) => {
             e.preventDefault();
-            zone.classList.remove('dragover');
-            if (e.dataTransfer.files.length) {
-                handleFile(e.dataTransfer.files[0], index);
-            }
+            zone.classList.remove('drag-over');
+            if (e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0], index);
         });
     });
 
-    // Handle File Upload
     function handleFile(file, index) {
-        // Validate file type
         const validTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/tiff'];
         if (!validTypes.includes(file.type)) {
-            showToast('error', 'Invalid File', 'Please upload PNG, JPG, or TIFF images.');
+            showToast('error', 'Invalid File', 'Please upload PNG, JPG, or TIFF.');
             return;
         }
 
-        // Store file
         AppState.files[index] = file;
 
-        // Create preview
+        // Update Metadata
+        const sizeStr = formatBytes(file.size);
+        const typeStr = file.type.split('/')[1].toUpperCase();
+
+        const nameEl = document.getElementById(`fileName${index + 1}`);
+        const metaEl = document.getElementById(`fileMeta${index + 1}`);
+
+        if (nameEl) nameEl.textContent = file.name;
+        if (metaEl) metaEl.textContent = `${sizeStr} • ${typeStr}`;
+
         const reader = new FileReader();
         reader.onload = (e) => {
             elements.previews[index].src = e.target.result;
             elements.placeholders[index].style.display = 'none';
-            elements.previewContainers[index].style.display = 'block';
-            elements.dropZones[index].classList.add('has-file');
-            
-            updateAnalyzeButton();
-            showToast('success', 'Image Loaded', `Time Point ${index + 1} image ready.`);
+            elements.previewContainers[index].style.display = 'flex'; // Changed to flex for new layout
+            updateButtons();
         };
         reader.readAsDataURL(file);
     }
 
-    // Remove Image
-    document.querySelectorAll('.remove-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            const index = parseInt(btn.dataset.index) - 1;
-            removeImage(index);
-        });
-    });
+    function formatBytes(bytes, decimals = 1) {
+        if (!+bytes) return '0 B';
+        const k = 1024;
+        const dm = decimals < 0 ? 0 : decimals;
+        const sizes = ['B', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`;
+    }
 
-    function removeImage(index) {
+    // Remove Image
+    document.addEventListener('click', (e) => {
+        const btn = e.target.closest('.remove-btn-simple');
+        if (!btn) return;
+
+        e.stopPropagation();
+        const index = parseInt(btn.dataset.index) - 1;
         AppState.files[index] = null;
         elements.inputs[index].value = '';
         elements.previews[index].src = '';
-        elements.placeholders[index].style.display = 'flex';
+        elements.placeholders[index].style.display = 'flex'; // Revert to flex
         elements.previewContainers[index].style.display = 'none';
-        elements.dropZones[index].classList.remove('has-file');
-        updateAnalyzeButton();
-    }
-
-    // Update Analyze Button State
-    function updateAnalyzeButton() {
-        const hasAllFiles = AppState.files[0] && AppState.files[1];
-        elements.analyzeBtn.disabled = !hasAllFiles || AppState.isProcessing;
-    }
-
-    // Clear All
-    if (elements.clearBtn) {
-        elements.clearBtn.addEventListener('click', () => {
-            removeImage(0);
-            removeImage(1);
-            showEmptyState();
-        });
-    }
-
-    // Analyze Button Click
-    if (elements.analyzeBtn) {
-        elements.analyzeBtn.addEventListener('click', runAnalysis);
-    }
-
-    // New Analysis Button
-    const newAnalysisBtn = document.getElementById('newAnalysis');
-    if (newAnalysisBtn) {
-        newAnalysisBtn.addEventListener('click', () => {
-            removeImage(0);
-            removeImage(1);
-            showEmptyState();
-        });
-    }
-
-    // Run Analysis
-    async function runAnalysis() {
-        if (!AppState.files[0] || !AppState.files[1]) return;
-
-        AppState.isProcessing = true;
-        elements.analyzeBtn.classList.add('loading');
-        elements.analyzeBtn.disabled = true;
-        updateStatus('processing', 'Processing...');
-        showLoadingState();
-
-        const formData = new FormData();
-        formData.append('image1', AppState.files[0]);
-        formData.append('image2', AppState.files[1]);
-
-        const loadingMessages = [
-            'Initializing model...',
-            'Loading images...',
-            'Extracting features...',
-            'Running inference...',
-            'Applying attention...',
-            'Generating mask...',
-            'Finalizing results...'
-        ];
-
-        let messageIndex = 0;
-        const loadingMessage = document.getElementById('loadingMessage');
-        const progressBar = document.getElementById('progressBar');
-        
-        const messageInterval = setInterval(() => {
-            if (messageIndex < loadingMessages.length) {
-                loadingMessage.textContent = loadingMessages[messageIndex];
-                progressBar.style.width = `${((messageIndex + 1) / loadingMessages.length) * 100}%`;
-                messageIndex++;
-            }
-        }, 400);
-
-        try {
-            const response = await fetch('/api/predict', {
-                method: 'POST',
-                body: formData
-            });
-
-            clearInterval(messageInterval);
-            progressBar.style.width = '100%';
-
-            if (!response.ok) {
-                const error = await response.json();
-                throw new Error(error.error || 'Analysis failed');
-            }
-
-            const data = await response.json();
-            AppState.results = data;
-            
-            // Short delay for smooth transition
-            await new Promise(resolve => setTimeout(resolve, 500));
-            
-            showResults(data);
-            updateStatus('ready', 'Ready');
-            showToast('success', 'Analysis Complete', `Change detection finished in ${data.inference_time || '0.00'}s`);
-
-        } catch (error) {
-            clearInterval(messageInterval);
-            console.error('Analysis error:', error);
-            showToast('error', 'Analysis Failed', error.message);
-            showEmptyState();
-            updateStatus('error', 'Error');
-        } finally {
-            AppState.isProcessing = false;
-            elements.analyzeBtn.classList.remove('loading');
-            updateAnalyzeButton();
-        }
-    }
-
-    // Show States
-    function showEmptyState() {
-        elements.emptyState.style.display = 'flex';
-        elements.loadingState.style.display = 'none';
-        elements.resultsDisplay.style.display = 'none';
-    }
-
-    function showLoadingState() {
-        elements.emptyState.style.display = 'none';
-        elements.loadingState.style.display = 'flex';
-        elements.resultsDisplay.style.display = 'none';
-        
-        const progressBar = document.getElementById('progressBar');
-        progressBar.style.width = '0%';
-    }
-
-    function showResults(data) {
-        elements.emptyState.style.display = 'none';
-        elements.loadingState.style.display = 'none';
-        elements.resultsDisplay.style.display = 'flex';
-
-        // Update time
-        document.getElementById('inferenceTime').textContent = `${data.inference_time || '0.00'}s`;
-
-        // Update comparison images
-        const compBefore = document.getElementById('compBefore');
-        const compAfter = document.getElementById('compAfter');
-        if (compBefore && data.image1_url) compBefore.src = data.image1_url;
-        if (compAfter && data.image2_url) compAfter.src = data.image2_url;
-
-        // Update result images
-        const resultMask = document.getElementById('resultMask');
-        const resultOverlay = document.getElementById('resultOverlay');
-        if (resultMask && data.mask_url) resultMask.src = data.mask_url;
-        if (resultOverlay && data.overlay_url) resultOverlay.src = data.overlay_url;
-
-        // Update metrics
-        updateMetrics(data);
-        
-        // Initialize comparison slider
-        initComparisonSlider();
-    }
-
-    // Update Metrics Panel
-    function updateMetrics(data) {
-        const metricsPlaceholder = document.querySelector('.metrics-placeholder');
-        const metricsContent = document.getElementById('metricsContent');
-        
-        if (metricsPlaceholder) metricsPlaceholder.style.display = 'none';
-        if (metricsContent) metricsContent.style.display = 'flex';
-
-        // Calculate change percentage (mock if not provided)
-        const changePercent = data.change_percentage || Math.random() * 30;
-        const changedPixels = data.changed_pixels || Math.floor(changePercent * 655.36);
-        const totalPixels = data.total_pixels || 65536;
-        const confidence = data.confidence || (85 + Math.random() * 10);
-
-        document.getElementById('metricChange').textContent = `${changePercent.toFixed(1)}%`;
-        document.getElementById('changeBar').style.width = `${Math.min(changePercent * 2, 100)}%`;
-        document.getElementById('metricPixels').textContent = changedPixels.toLocaleString();
-        document.getElementById('metricTotal').textContent = totalPixels.toLocaleString();
-        document.getElementById('metricConfidence').textContent = `${confidence.toFixed(1)}%`;
-        document.getElementById('metricTime').textContent = `${((data.inference_time || 0.5) * 1000).toFixed(0)}ms`;
-        document.getElementById('metricDimensions').textContent = data.dimensions || '256×256';
-    }
-
-    // Update Status Indicator
-    function updateStatus(type, text) {
-        if (!elements.statusIndicator) return;
-        
-        elements.statusIndicator.className = 'status-indicator';
-        if (type === 'processing') {
-            elements.statusIndicator.classList.add('processing');
-        } else if (type === 'error') {
-            elements.statusIndicator.classList.add('error');
-        }
-        
-        const statusText = elements.statusIndicator.querySelector('.status-text');
-        if (statusText) statusText.textContent = text;
-    }
-
-    // Tab Switching
-    const tabBtns = document.querySelectorAll('.tab-btn');
-    tabBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
-            const tabId = btn.dataset.tab;
-            
-            // Update buttons
-            tabBtns.forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            
-            // Update content
-            document.querySelectorAll('.tab-content').forEach(content => {
-                content.classList.remove('active');
-            });
-            document.getElementById(`tab-${tabId}`).classList.add('active');
-        });
+        updateButtons();
     });
 
-    // Comparison Slider
+    function updateButtons() {
+        const hasFiles = AppState.files[0] && AppState.files[1];
+        if (elements.analyzeBtn) elements.analyzeBtn.disabled = !hasFiles || AppState.isProcessing;
+    }
+
+    if (elements.clearBtn) {
+        elements.clearBtn.addEventListener('click', () => {
+            // Reset logic
+            location.reload();
+        });
+    }
+
+    // Analysis Logic
+    if (elements.analyzeBtn) {
+        elements.analyzeBtn.addEventListener('click', async () => {
+            if (!AppState.files[0] || !AppState.files[1]) return;
+
+            AppState.isProcessing = true;
+            updateButtons();
+
+            elements.emptyState.style.display = 'none';
+            elements.loadingState.style.display = 'block';
+            if (elements.resultsDisplay) elements.resultsDisplay.style.display = 'none';
+
+            const formData = new FormData();
+            formData.append('image1', AppState.files[0]);
+            formData.append('image2', AppState.files[1]);
+
+            try {
+                // Mock progress
+                let progress = 0;
+                const progressBar = document.getElementById('progressBar');
+                const interval = setInterval(() => {
+                    progress = Math.min(progress + 5, 90);
+                    if (progressBar) progressBar.style.width = `${progress}%`;
+                }, 100);
+
+                const response = await fetch('/api/predict', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                clearInterval(interval);
+                if (progressBar) progressBar.style.width = '100%';
+
+                const data = await response.json();
+
+                if (data.error) throw new Error(data.error);
+
+                // Show Results
+                elements.loadingState.style.display = 'none';
+                elements.resultsDisplay.style.display = 'flex'; // Important: flex for layout
+                elements.resultsDisplay.classList.add('active');
+
+                displayResults(data);
+                showToast('success', 'Analysis Complete', `Finished in ${data.process_time}s`);
+
+            } catch (error) {
+                console.error(error);
+                elements.loadingState.style.display = 'none';
+                elements.emptyState.style.display = 'block';
+                showToast('error', 'Analysis Failed', error.message);
+            } finally {
+                AppState.isProcessing = false;
+                updateButtons();
+            }
+        });
+    }
+
+    function displayResults(data) {
+        // Images
+        if (document.getElementById('compBefore')) document.getElementById('compBefore').src = data.image1_url;
+        if (document.getElementById('compAfter')) document.getElementById('compAfter').src = data.image2_url;
+        if (document.getElementById('resultMask')) document.getElementById('resultMask').src = data.mask_url;
+        if (document.getElementById('resultOverlay')) document.getElementById('resultOverlay').src = data.overlay_url;
+
+        // Metrics
+        document.getElementById('metricChange').textContent = `${data.change_percentage.toFixed(2)}%`;
+        document.getElementById('metricPixels').textContent = data.changed_pixels.toLocaleString();
+        document.getElementById('metricTotal').textContent = data.total_pixels.toLocaleString();
+        document.getElementById('metricConfidence').textContent = `${(data.confidence * 100).toFixed(1)}%`;
+        document.getElementById('metricTime').textContent = `${(data.process_time * 1000).toFixed(0)}ms`;
+
+        // Initialize Slider
+        initComparisonSlider();
+
+        // Setup Download Buttons
+        document.getElementById('downloadMask').onclick = () => download(data.mask_url, 'mask.png');
+        document.getElementById('downloadOverlay').onclick = () => download(data.overlay_url, 'overlay.png');
+    }
+
+    // Comparison Slider Logic
     function initComparisonSlider() {
         const slider = document.getElementById('comparisonSlider');
         const handle = document.getElementById('comparisonHandle');
-        const afterImage = document.querySelector('.comparison-after');
-        
-        if (!slider || !handle || !afterImage) return;
+        const beforeImg = document.querySelector('.comparison-before');
 
-        let isDragging = false;
+        if (!slider || !handle || !beforeImg) return;
 
-        const updateSlider = (x) => {
+        let active = false;
+
+        const update = (x) => {
             const rect = slider.getBoundingClientRect();
-            let percentage = ((x - rect.left) / rect.width) * 100;
-            percentage = Math.max(0, Math.min(100, percentage));
-            
-            handle.style.left = `${percentage}%`;
-            afterImage.style.clipPath = `inset(0 ${100 - percentage}% 0 0)`;
+            let val = ((x - rect.left) / rect.width) * 100;
+            val = Math.max(0, Math.min(100, val));
+
+            handle.style.left = `${val}%`;
+            beforeImg.style.clipPath = `inset(0 ${100 - val}% 0 0)`;
         };
 
-        handle.addEventListener('mousedown', () => isDragging = true);
-        document.addEventListener('mouseup', () => isDragging = false);
-        document.addEventListener('mousemove', (e) => {
-            if (isDragging) {
-                updateSlider(e.clientX);
-            }
-        });
+        const start = () => active = true;
+        const end = () => active = false;
+        const move = (e) => {
+            if (!active) return;
+            const x = e.touches ? e.touches[0].clientX : e.clientX;
+            update(x);
+        };
 
-        // Touch support
-        handle.addEventListener('touchstart', () => isDragging = true);
-        document.addEventListener('touchend', () => isDragging = false);
-        document.addEventListener('touchmove', (e) => {
-            if (isDragging && e.touches.length) {
-                updateSlider(e.touches[0].clientX);
-            }
-        });
+        handle.addEventListener('mousedown', start);
+        window.addEventListener('mouseup', end);
+        window.addEventListener('mousemove', move);
 
-        // Click on slider
-        slider.addEventListener('click', (e) => {
-            if (e.target !== handle && !e.target.closest('.comparison-handle')) {
-                updateSlider(e.clientX);
-            }
-        });
+        handle.addEventListener('touchstart', start);
+        window.addEventListener('touchend', end);
+        window.addEventListener('touchmove', move);
     }
 
-    // Download Functions
-    document.getElementById('downloadMask')?.addEventListener('click', () => {
-        if (AppState.results?.mask_url) {
-            downloadImage(AppState.results.mask_url, 'change_mask.png');
-        }
+    // Tabs
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.result-tab-content').forEach(c => {
+                c.classList.remove('active');
+                c.style.display = 'none'; // Force hide
+            });
+
+            btn.classList.add('active');
+            const content = document.getElementById(`tab-${btn.dataset.tab}`);
+            if (content) {
+                content.classList.add('active');
+                content.style.display = 'flex'; // Force show
+            }
+        });
     });
 
-    document.getElementById('downloadOverlay')?.addEventListener('click', () => {
-        if (AppState.results?.overlay_url) {
-            downloadImage(AppState.results.overlay_url, 'change_overlay.png');
-        }
-    });
-
-    function downloadImage(url, filename) {
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = filename;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        showToast('success', 'Download Started', `${filename} is being downloaded.`);
-    }
-
-    // Toast Notifications
-    function showToast(type, title, message) {
-        if (!elements.toastContainer) return;
-
+    // Helper: Toast
+    function showToast(type, title, msg) {
+        const container = elements.toastContainer;
         const toast = document.createElement('div');
         toast.className = `toast ${type}`;
         toast.innerHTML = `
-            <div class="toast-icon">
-                <i class="fas fa-${type === 'success' ? 'check' : type === 'error' ? 'times' : 'exclamation'}"></i>
-            </div>
             <div class="toast-content">
-                <div class="toast-title">${title}</div>
-                <div class="toast-message">${message}</div>
+                <strong>${title}</strong>
+                <div>${msg}</div>
             </div>
-            <button class="toast-close">
-                <i class="fas fa-times"></i>
-            </button>
         `;
-
-        elements.toastContainer.appendChild(toast);
-
-        // Close button
-        toast.querySelector('.toast-close').addEventListener('click', () => {
-            removeToast(toast);
-        });
-
-        // Auto remove after 5 seconds
-        setTimeout(() => removeToast(toast), 5000);
+        container.appendChild(toast);
+        setTimeout(() => toast.remove(), 4000);
     }
 
-    function removeToast(toast) {
-        toast.style.animation = 'slideIn 0.3s ease reverse';
-        setTimeout(() => toast.remove(), 300);
+    // Helper: Download
+    function download(url, name) {
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = name;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
     }
-
-    // ═══════════════════════════════════════════════════════════════════════════
-    // PARTICLE ANIMATION
-    // ═══════════════════════════════════════════════════════════════════════════
-
-    const particlesContainer = document.getElementById('particles');
-    if (particlesContainer) {
-        for (let i = 0; i < 50; i++) {
-            const particle = document.createElement('div');
-            particle.className = 'particle';
-            particle.style.cssText = `
-                position: absolute;
-                width: ${Math.random() * 4 + 1}px;
-                height: ${Math.random() * 4 + 1}px;
-                background: rgba(99, 102, 241, ${Math.random() * 0.5 + 0.2});
-                border-radius: 50%;
-                left: ${Math.random() * 100}%;
-                top: ${Math.random() * 100}%;
-                animation: float ${Math.random() * 10 + 10}s linear infinite;
-                animation-delay: ${Math.random() * -20}s;
-            `;
-            particlesContainer.appendChild(particle);
-        }
-    }
-
-    // ═══════════════════════════════════════════════════════════════════════════
-    // MOBILE MENU
-    // ═══════════════════════════════════════════════════════════════════════════
-
-    const mobileToggle = document.getElementById('mobileToggle');
-    const navLinks = document.querySelector('.nav-links');
-    
-    if (mobileToggle && navLinks) {
-        mobileToggle.addEventListener('click', () => {
-            mobileToggle.classList.toggle('active');
-            navLinks.classList.toggle('active');
-        });
-    }
-
-    // ═══════════════════════════════════════════════════════════════════════════
-    // KEYBOARD SHORTCUTS
-    // ═══════════════════════════════════════════════════════════════════════════
-
-    document.addEventListener('keydown', (e) => {
-        // Ctrl/Cmd + Enter to run analysis
-        if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
-            if (elements.analyzeBtn && !elements.analyzeBtn.disabled) {
-                elements.analyzeBtn.click();
-            }
-        }
-        
-        // Escape to clear
-        if (e.key === 'Escape') {
-            if (elements.clearBtn) {
-                elements.clearBtn.click();
-            }
-        }
-    });
-
-    console.log('🛰️ LandCover AI initialized');
-});
+}
