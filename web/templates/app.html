@@ -1,120 +1,391 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Workbench | LandCover AI</title>
-
+    <title>Console | LandCover AI</title>
+    
+    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700&family=Inter:wght@400;500;600&display=swap"
-        rel="stylesheet">
-
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Styles -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
-
-<body style="background: var(--bg-secondary);">
-
-    <!-- APP NAVIGATION -->
-    <nav class="nav">
-        <a href="/" class="brand">
-            <div class="brand-dot"></div>
-            LandCover AI
-        </a>
-        <div class="nav-menu">
-            <span class="nav-link" style="color: var(--text-main); font-weight: 600;">Workbench Active</span>
-        </div>
-        <a href="/" class="btn"
-            style="background: transparent; color: var(--text-secondary); height: 40px; font-size: 14px;">Exit
-            Session</a>
-    </nav>
-
-    <!-- WORKBENCH WRAPPER -->
-    <div class="app-fullscreen">
-        <div class="app-container">
-
-            <!-- CONTROLS SIDEBAR -->
-            <div class="app-controls">
-                <h3>Analysis Console</h3>
-                <p class="small-text" style="margin-bottom: 32px;">Initialize SNUNet-CBAM sequence.</p>
-
-                <!-- Drop Zone 1 -->
-                <div class="upload-zone" id="dropZone1" role="button" tabindex="0" aria-label="Upload Time 1 Image">
-                    <input type="file" id="input1" hidden accept="image/*">
-                    <div class="upload-content">
-                        <div class="label-bold">Input T1</div>
-                        <div class="label-sub">Select Pre-Event Source</div>
-                    </div>
-                    <img id="preview1" alt="Preview T1" style="display:none; width: 100%; border-radius: 8px;">
-                </div>
-
-                <!-- Drop Zone 2 -->
-                <div class="upload-zone" id="dropZone2" role="button" tabindex="0" aria-label="Upload Time 2 Image">
-                    <input type="file" id="input2" hidden accept="image/*">
-                    <div class="upload-content">
-                        <div class="label-bold">Input T2</div>
-                        <div class="label-sub">Select Post-Event Source</div>
-                    </div>
-                    <img id="preview2" alt="Preview T2" style="display:none; width: 100%; border-radius: 8px;">
-                </div>
-
-                <button id="analyzeBtn" class="btn btn-block" disabled>Run Change Detection</button>
-            </div>
-
-            <!-- RESULTS DISPLAY -->
-            <div class="app-display" id="resultsArea">
-                <!-- Empty State -->
-                <div id="emptyState" class="empty-state"
-                    style="height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--text-muted);">
-                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
-                        style="opacity: 0.2; margin-bottom: 16px;">
-                        <path
-                            d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
-                        <polyline points="3.27 6.96 12 12.01 20.73 6.96" />
-                        <line x1="12" y1="22.08" x2="12" y2="12" />
-                    </svg>
-                    <div>Ready for input streams</div>
-                </div>
-
-                <!-- Result Content -->
-                <div id="resultsContainer" class="results-container"
-                    style="display: none; opacity: 0; transition: opacity 0.5s ease;">
-                    <div class="result-header">
-                        <span class="status-indicator">SEQUENCE COMPLETE</span>
-                        <span id="valTime" class="time-readout">0.3s</span>
-                    </div>
-
-                    <div class="visuals-grid">
-                        <div>
-                            <div class="viz-label">CHANGE MASK</div>
-                            <img id="resMask" alt="Generated Change Mask" src="" class="result-img">
-                        </div>
-                        <div>
-                            <div class="viz-label">OVERLAY COMPOSITE</div>
-                            <img id="resOverlay" alt="Generated Overlay" src="" class="result-img">
-                        </div>
-                    </div>
-
-                    <div class="metrics-row">
-                        <div class="metric-block">
-                            <div class="metric-label">CHANGED PIXELS</div>
-                            <div class="metric-val" id="valArea">--</div>
-                        </div>
-                        <div class="metric-block">
-                            <div class="metric-label">PERCENTAGE</div>
-                            <div class="metric-val" id="valPercent">--</div>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-
-        </div>
+<body class="app-page">
+    
+    <!-- App Background -->
+    <div class="app-bg">
+        <div class="grid-pattern"></div>
     </div>
 
+    <!-- Top Navigation Bar -->
+    <nav class="app-navbar">
+        <div class="app-nav-left">
+            <a href="/" class="logo">
+                <div class="logo-icon">
+                    <i class="fas fa-satellite"></i>
+                </div>
+                <span class="logo-text">LandCover<span class="highlight">AI</span></span>
+            </a>
+            <div class="nav-divider"></div>
+            <span class="nav-title">
+                <i class="fas fa-terminal"></i>
+                Console
+            </span>
+        </div>
+        
+        <div class="app-nav-right">
+            <div class="status-indicator" id="statusIndicator">
+                <span class="status-dot"></span>
+                <span class="status-text">Ready</span>
+            </div>
+            <a href="/" class="nav-btn">
+                <i class="fas fa-times"></i>
+            </a>
+        </div>
+    </nav>
+
+    <!-- Main Application -->
+    <main class="app-main">
+        <!-- Left Panel - Upload Controls -->
+        <aside class="control-panel">
+            <div class="panel-header">
+                <h2>
+                    <i class="fas fa-sliders-h"></i>
+                    Input Controls
+                </h2>
+            </div>
+            
+            <div class="panel-content">
+                <!-- Upload Zone 1 -->
+                <div class="upload-section">
+                    <label class="upload-label">
+                        <span class="label-dot blue"></span>
+                        Time Point 1 (Before)
+                    </label>
+                    <div class="upload-zone" id="dropZone1" data-index="1">
+                        <input type="file" id="input1" hidden accept="image/*">
+                        <div class="upload-placeholder" id="placeholder1">
+                            <div class="upload-icon">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                            </div>
+                            <span class="upload-text">Drop image or click to browse</span>
+                            <span class="upload-hint">PNG, JPG, TIFF supported</span>
+                        </div>
+                        <div class="upload-preview" id="previewContainer1" style="display: none;">
+                            <img id="preview1" alt="Preview T1">
+                            <button class="remove-btn" data-index="1">
+                                <i class="fas fa-times"></i>
+                            </button>
+                            <div class="preview-overlay">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Upload Zone 2 -->
+                <div class="upload-section">
+                    <label class="upload-label">
+                        <span class="label-dot green"></span>
+                        Time Point 2 (After)
+                    </label>
+                    <div class="upload-zone" id="dropZone2" data-index="2">
+                        <input type="file" id="input2" hidden accept="image/*">
+                        <div class="upload-placeholder" id="placeholder2">
+                            <div class="upload-icon">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                            </div>
+                            <span class="upload-text">Drop image or click to browse</span>
+                            <span class="upload-hint">PNG, JPG, TIFF supported</span>
+                        </div>
+                        <div class="upload-preview" id="previewContainer2" style="display: none;">
+                            <img id="preview2" alt="Preview T2">
+                            <button class="remove-btn" data-index="2">
+                                <i class="fas fa-times"></i>
+                            </button>
+                            <div class="preview-overlay">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="action-section">
+                    <button id="analyzeBtn" class="btn-analyze" disabled>
+                        <span class="btn-content">
+                            <i class="fas fa-play"></i>
+                            <span>Run Detection</span>
+                        </span>
+                        <div class="btn-loader">
+                            <div class="loader-spinner"></div>
+                            <span>Processing...</span>
+                        </div>
+                    </button>
+                    
+                    <button id="clearBtn" class="btn-clear">
+                        <i class="fas fa-trash-alt"></i>
+                        <span>Clear All</span>
+                    </button>
+                </div>
+
+                <!-- Model Info -->
+                <div class="model-info">
+                    <div class="info-header">
+                        <i class="fas fa-info-circle"></i>
+                        <span>Model Information</span>
+                    </div>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <span class="info-label">Architecture</span>
+                            <span class="info-value">SNUNet-CBAM</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Parameters</span>
+                            <span class="info-value">11.7M</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Input Size</span>
+                            <span class="info-value">256×256</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">TTA</span>
+                            <span class="info-value">8× Ensemble</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Center Panel - Results Display -->
+        <section class="display-panel">
+            <!-- Empty State -->
+            <div class="empty-state" id="emptyState">
+                <div class="empty-visual">
+                    <div class="empty-icon">
+                        <i class="fas fa-satellite-dish"></i>
+                    </div>
+                    <div class="empty-rings">
+                        <div class="ring r1"></div>
+                        <div class="ring r2"></div>
+                        <div class="ring r3"></div>
+                    </div>
+                </div>
+                <h3>Ready for Analysis</h3>
+                <p>Upload two satellite images to begin change detection</p>
+                
+                <div class="quick-tips">
+                    <div class="tip">
+                        <i class="fas fa-lightbulb"></i>
+                        <span>Tip: Use images from the same location at different times</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Loading State -->
+            <div class="loading-state" id="loadingState" style="display: none;">
+                <div class="loading-visual">
+                    <div class="loading-ring">
+                        <div class="ring-segment s1"></div>
+                        <div class="ring-segment s2"></div>
+                        <div class="ring-segment s3"></div>
+                    </div>
+                    <div class="loading-icon">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                </div>
+                <div class="loading-text">
+                    <h3>Analyzing Images</h3>
+                    <p id="loadingMessage">Initializing model...</p>
+                </div>
+                <div class="loading-progress">
+                    <div class="progress-bar" id="progressBar"></div>
+                </div>
+            </div>
+
+            <!-- Results Display -->
+            <div class="results-display" id="resultsDisplay" style="display: none;">
+                <!-- Results Header -->
+                <div class="results-header">
+                    <div class="results-title">
+                        <i class="fas fa-check-circle success"></i>
+                        <span>Analysis Complete</span>
+                    </div>
+                    <div class="results-time">
+                        <i class="fas fa-clock"></i>
+                        <span id="inferenceTime">0.00s</span>
+                    </div>
+                </div>
+
+                <!-- Results Tabs -->
+                <div class="results-tabs">
+                    <button class="tab-btn active" data-tab="comparison">
+                        <i class="fas fa-columns"></i>
+                        <span>Comparison</span>
+                    </button>
+                    <button class="tab-btn" data-tab="mask">
+                        <i class="fas fa-mask"></i>
+                        <span>Change Mask</span>
+                    </button>
+                    <button class="tab-btn" data-tab="overlay">
+                        <i class="fas fa-layer-group"></i>
+                        <span>Overlay</span>
+                    </button>
+                </div>
+
+                <!-- Tab Contents -->
+                <div class="tab-content active" id="tab-comparison">
+                    <div class="comparison-container">
+                        <div class="comparison-slider" id="comparisonSlider">
+                            <div class="comparison-before">
+                                <img id="compBefore" alt="Before">
+                                <div class="comparison-label">Before</div>
+                            </div>
+                            <div class="comparison-after">
+                                <img id="compAfter" alt="After">
+                                <div class="comparison-label">After</div>
+                            </div>
+                            <div class="comparison-handle" id="comparisonHandle">
+                                <div class="handle-line"></div>
+                                <div class="handle-circle">
+                                    <i class="fas fa-arrows-alt-h"></i>
+                                </div>
+                                <div class="handle-line"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-content" id="tab-mask">
+                    <div class="single-view">
+                        <img id="resultMask" alt="Change Mask">
+                        <div class="image-legend">
+                            <div class="legend-item">
+                                <span class="legend-color white"></span>
+                                <span>Changed Regions</span>
+                            </div>
+                            <div class="legend-item">
+                                <span class="legend-color black"></span>
+                                <span>No Change</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-content" id="tab-overlay">
+                    <div class="single-view">
+                        <img id="resultOverlay" alt="Overlay">
+                        <div class="image-legend">
+                            <div class="legend-item">
+                                <span class="legend-color highlight"></span>
+                                <span>Detected Changes</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Download Actions -->
+                <div class="results-actions">
+                    <button class="action-btn" id="downloadMask">
+                        <i class="fas fa-download"></i>
+                        <span>Download Mask</span>
+                    </button>
+                    <button class="action-btn" id="downloadOverlay">
+                        <i class="fas fa-download"></i>
+                        <span>Download Overlay</span>
+                    </button>
+                    <button class="action-btn secondary" id="newAnalysis">
+                        <i class="fas fa-redo"></i>
+                        <span>New Analysis</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Right Panel - Metrics -->
+        <aside class="metrics-panel" id="metricsPanel">
+            <div class="panel-header">
+                <h2>
+                    <i class="fas fa-chart-bar"></i>
+                    Metrics
+                </h2>
+            </div>
+            
+            <div class="panel-content">
+                <!-- Metrics will be populated by JavaScript -->
+                <div class="metrics-placeholder">
+                    <i class="fas fa-chart-pie"></i>
+                    <span>Run analysis to see metrics</span>
+                </div>
+                
+                <div class="metrics-content" id="metricsContent" style="display: none;">
+                    <div class="metric-card primary">
+                        <div class="metric-header">
+                            <span class="metric-label">Change Percentage</span>
+                            <i class="fas fa-percentage"></i>
+                        </div>
+                        <div class="metric-value" id="metricChange">0%</div>
+                        <div class="metric-bar">
+                            <div class="bar-fill" id="changeBar"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="metric-card">
+                        <div class="metric-header">
+                            <span class="metric-label">Changed Pixels</span>
+                            <i class="fas fa-th"></i>
+                        </div>
+                        <div class="metric-value" id="metricPixels">0</div>
+                    </div>
+                    
+                    <div class="metric-card">
+                        <div class="metric-header">
+                            <span class="metric-label">Total Pixels</span>
+                            <i class="fas fa-border-all"></i>
+                        </div>
+                        <div class="metric-value" id="metricTotal">0</div>
+                    </div>
+                    
+                    <div class="metric-card">
+                        <div class="metric-header">
+                            <span class="metric-label">Confidence</span>
+                            <i class="fas fa-check-double"></i>
+                        </div>
+                        <div class="metric-value" id="metricConfidence">0%</div>
+                    </div>
+                    
+                    <div class="metric-divider"></div>
+                    
+                    <div class="metric-card">
+                        <div class="metric-header">
+                            <span class="metric-label">Processing Time</span>
+                            <i class="fas fa-stopwatch"></i>
+                        </div>
+                        <div class="metric-value" id="metricTime">0ms</div>
+                    </div>
+                    
+                    <div class="metric-card">
+                        <div class="metric-header">
+                            <span class="metric-label">Image Dimensions</span>
+                            <i class="fas fa-expand"></i>
+                        </div>
+                        <div class="metric-value" id="metricDimensions">-</div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+    </main>
+
+    <!-- Toast Notifications -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Scripts -->
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 </body>
-
 </html>

@@ -1,134 +1,506 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>LandCover AI | Autonomous Change Detection</title>
-  <meta name="description" content="LandCover AI: Autonomous sub-meter satellite change detection for enterprise.">
-
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link
-    href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700&family=Inter:wght@400;500;600&display=swap"
-    rel="stylesheet">
-
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LandCover AI | Satellite Change Detection</title>
+    <meta name="description" content="Advanced AI-powered satellite imagery change detection for ISRO and environmental monitoring.">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
-
-<body>
-
-  <!-- NAVIGATION -->
-  <nav class="nav">
-    <a href="/" class="brand">
-      <div class="brand-dot"></div>
-      LandCover AI
-    </a>
-    <div class="nav-menu">
-      <a href="#how" class="nav-link">Methodology</a>
-      <a href="#impact" class="nav-link">Global Impact</a>
+<body class="landing-page">
+    
+    <!-- Animated Background -->
+    <div class="bg-animation">
+        <div class="gradient-orb orb-1"></div>
+        <div class="gradient-orb orb-2"></div>
+        <div class="gradient-orb orb-3"></div>
+        <div class="grid-overlay"></div>
+        <div class="particles" id="particles"></div>
     </div>
-    <a href="/app" class="btn btn-primary" style="height: 40px; padding: 0 24px; font-size: 14px;">Launch Console</a>
-  </nav>
 
-  <!-- HERO SECTION -->
-  <header class="hero">
-    <div class="container text-center">
-      <h1>Autonomous detection<br>at planetary scale.</h1>
-      <p style="margin-top: 32px;" class="fade-in">
-        Leverage the SNUNet-CBAM architecture to identify<br>sub-meter environmental changes.
-      </p>
+    <!-- Cursor Glow Effect -->
+    <div class="cursor-glow" id="cursorGlow"></div>
 
-      <div class="hero-media reveal-up">
-        <!-- Hero: High Altitude Urban/Coast -->
-        <img src="https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?auto=format&fit=crop&q=80&w=2000"
-          alt="Aerial view of urban city grid and coastline" style="width: 100%; height: 100%; object-fit: cover;">
-      </div>
-    </div>
-  </header>
+    <!-- Navigation -->
+    <nav class="navbar" id="navbar">
+        <div class="nav-container">
+            <a href="/" class="logo">
+                <div class="logo-icon">
+                    <i class="fas fa-satellite"></i>
+                </div>
+                <span class="logo-text">LandCover<span class="highlight">AI</span></span>
+            </a>
+            
+            <div class="nav-links">
+                <a href="#features" class="nav-link">Features</a>
+                <a href="#technology" class="nav-link">Technology</a>
+                <a href="#about" class="nav-link">About</a>
+            </div>
+            
+            <a href="/app" class="nav-cta">
+                <span>Launch Console</span>
+                <i class="fas fa-arrow-right"></i>
+            </a>
 
-  <!-- STICKY SCROLL SECTION (How It Works) -->
-  <section id="how" class="sticky-wrapper">
-    <div class="sticky-container">
+            <button class="mobile-toggle" id="mobileToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </nav>
 
-      <!-- LEFT: SCROLLING TEXT -->
-      <div class="text-column">
-
-        <!-- STEP 01 -->
-        <div class="text-step active" data-index="0">
-          <span class="step-num">01. Precision</span>
-          <h2>Sub-Meter Accuracy</h2>
-          <p class="step-desc">
-            Traditional satellite analysis fails with clouds and shadows.
-            Our Semantic Attention Network (SNUNet) understands the <strong>structure</strong> of the land, filtering
-            out noise to find true changes.
-          </p>
+    <!-- Hero Section -->
+    <section class="hero" id="hero">
+        <div class="hero-content">
+            <div class="hero-badge animate-fade-in">
+                <span class="badge-pulse"></span>
+                <span>Powered by SNUNet-CBAM Architecture</span>
+            </div>
+            
+            <h1 class="hero-title">
+                <span class="title-line animate-slide-up">Detect Changes.</span>
+                <span class="title-line animate-slide-up delay-1 gradient-text">Understand Earth.</span>
+            </h1>
+            
+            <p class="hero-description animate-fade-in delay-2">
+                Advanced AI-powered satellite imagery analysis for environmental monitoring, 
+                urban planning, and disaster response. Built with cutting-edge deep learning.
+            </p>
+            
+            <div class="hero-actions animate-fade-in delay-3">
+                <a href="/app" class="btn-primary">
+                    <i class="fas fa-rocket"></i>
+                    <span>Start Detection</span>
+                    <div class="btn-shine"></div>
+                </a>
+                <a href="#features" class="btn-secondary">
+                    <i class="fas fa-play-circle"></i>
+                    <span>See How It Works</span>
+                </a>
+            </div>
+            
+            <div class="hero-stats animate-fade-in delay-4">
+                <div class="stat-item">
+                    <div class="stat-value-wrapper">
+                        <span class="stat-value counter" data-target="95.8">0</span>
+                        <span class="stat-unit">%</span>
+                    </div>
+                    <span class="stat-label">Accuracy</span>
+                </div>
+                <div class="stat-divider"></div>
+                <div class="stat-item">
+                    <div class="stat-value-wrapper">
+                        <span class="stat-value counter" data-target="400">0</span>
+                        <span class="stat-unit">ms</span>
+                    </div>
+                    <span class="stat-label">Response</span>
+                </div>
+                <div class="stat-divider"></div>
+                <div class="stat-item">
+                    <div class="stat-value-wrapper">
+                        <span class="stat-value counter" data-target="11.7">0</span>
+                        <span class="stat-unit">M</span>
+                    </div>
+                    <span class="stat-label">Parameters</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="hero-visual animate-scale-in delay-2">
+            <div class="visual-container">
+                <div class="orbit-ring ring-1"></div>
+                <div class="orbit-ring ring-2"></div>
+                
+                <div class="satellite-cards">
+                    <div class="preview-card card-before">
+                        <div class="card-header">
+                            <span class="card-dot"></span>
+                            <span>Before</span>
+                        </div>
+                        <div class="card-image">
+                            <img src="https://images.unsplash.com/photo-1569336415962-a4bd9f69c07b?auto=format&fit=crop&w=400&q=80" alt="Before">
+                        </div>
+                    </div>
+                    
+                    <div class="preview-card card-after">
+                        <div class="card-header">
+                            <span class="card-dot green"></span>
+                            <span>After</span>
+                        </div>
+                        <div class="card-image">
+                            <img src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=400&q=80" alt="After">
+                        </div>
+                    </div>
+                    
+                    <div class="result-badge">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Change Detected</span>
+                    </div>
+                </div>
+            </div>
         </div>
 
-        <!-- STEP 02 -->
-        <div class="text-step" data-index="1">
-          <span class="step-num">02. Velocity</span>
-          <h2>Automated Pipeline</h2>
-          <p class="step-desc">
-            Stop drawing polygons by hand. Drop two GeoTIFFs into the engine and get a vector-ready Change Mask in under
-            400ms.
-            <br>Designed for high-throughput enterprise workflows.
-          </p>
+        <div class="scroll-indicator">
+            <div class="mouse">
+                <div class="wheel"></div>
+            </div>
+            <span>Scroll to explore</span>
         </div>
+    </section>
 
-        <!-- STEP 03 -->
-        <div class="text-step" data-index="2">
-          <span class="step-num">03. Impact</span>
-          <h2>Global Intelligence</h2>
-          <p class="step-desc">
-            From urban sprawl monitoring to deforestation alerts. Transform raw pixels into actionable policy decisions.
-            <br>Scalable from a single block to an entire continent.
-          </p>
+    <!-- Features Section -->
+    <section id="features" class="features-section">
+        <div class="section-container">
+            <div class="section-header">
+                <span class="section-tag">
+                    <i class="fas fa-sparkles"></i>
+                    Features
+                </span>
+                <h2 class="section-title">Why Choose <span class="gradient-text">LandCover AI</span>?</h2>
+                <p class="section-desc">State-of-the-art change detection with enterprise-grade reliability</p>
+            </div>
+            
+            <div class="features-grid">
+                <div class="feature-card" data-scroll>
+                    <div class="feature-glow"></div>
+                    <div class="feature-icon">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    <h3>SNUNet Architecture</h3>
+                    <p>Siamese Nested U-Net with dense skip connections for precise boundary detection.</p>
+                    <div class="feature-link">
+                        <span>Learn more</span>
+                        <i class="fas fa-arrow-right"></i>
+                    </div>
+                </div>
+                
+                <div class="feature-card" data-scroll>
+                    <div class="feature-glow"></div>
+                    <div class="feature-icon purple">
+                        <i class="fas fa-eye"></i>
+                    </div>
+                    <h3>CBAM Attention</h3>
+                    <p>Channel and spatial attention for focusing on what matters most.</p>
+                    <div class="feature-link">
+                        <span>Learn more</span>
+                        <i class="fas fa-arrow-right"></i>
+                    </div>
+                </div>
+                
+                <div class="feature-card" data-scroll>
+                    <div class="feature-glow"></div>
+                    <div class="feature-icon orange">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                    <h3>Real-Time Speed</h3>
+                    <p>Get change masks in under 400ms on consumer hardware.</p>
+                    <div class="feature-link">
+                        <span>Learn more</span>
+                        <i class="fas fa-arrow-right"></i>
+                    </div>
+                </div>
+                
+                <div class="feature-card" data-scroll>
+                    <div class="feature-glow"></div>
+                    <div class="feature-icon green">
+                        <i class="fas fa-layer-group"></i>
+                    </div>
+                    <h3>Hybrid Loss</h3>
+                    <p>BCE + Dice + Focal + Tversky for robust training.</p>
+                    <div class="feature-link">
+                        <span>Learn more</span>
+                        <i class="fas fa-arrow-right"></i>
+                    </div>
+                </div>
+                
+                <div class="feature-card" data-scroll>
+                    <div class="feature-glow"></div>
+                    <div class="feature-icon cyan">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h3>EMA Smoothing</h3>
+                    <p>Exponential Moving Average for stable predictions.</p>
+                    <div class="feature-link">
+                        <span>Learn more</span>
+                        <i class="fas fa-arrow-right"></i>
+                    </div>
+                </div>
+                
+                <div class="feature-card" data-scroll>
+                    <div class="feature-glow"></div>
+                    <div class="feature-icon pink">
+                        <i class="fas fa-expand-arrows-alt"></i>
+                    </div>
+                    <h3>8x TTA Ensemble</h3>
+                    <p>Test-Time Augmentation for maximum accuracy.</p>
+                    <div class="feature-link">
+                        <span>Learn more</span>
+                        <i class="fas fa-arrow-right"></i>
+                    </div>
+                </div>
+            </div>
         </div>
+    </section>
 
-      </div>
+    <!-- Technology Section -->
+    <section id="technology" class="tech-section">
+        <div class="section-container">
+            <div class="section-header">
+                <span class="section-tag">
+                    <i class="fas fa-microchip"></i>
+                    Technology
+                </span>
+                <h2 class="section-title">How It <span class="gradient-text">Works</span></h2>
+            </div>
+            
+            <div class="tech-timeline">
+                <div class="timeline-track">
+                    <div class="timeline-progress" id="timelineProgress"></div>
+                </div>
+                
+                <div class="timeline-steps">
+                    <div class="timeline-step" data-scroll>
+                        <div class="step-marker">
+                            <span>01</span>
+                        </div>
+                        <div class="step-content">
+                            <div class="step-icon">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                            </div>
+                            <h4>Upload Images</h4>
+                            <p>Drag and drop two satellite images from different time periods.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="timeline-step" data-scroll>
+                        <div class="step-marker">
+                            <span>02</span>
+                        </div>
+                        <div class="step-content">
+                            <div class="step-icon purple">
+                                <i class="fas fa-cogs"></i>
+                            </div>
+                            <h4>AI Processing</h4>
+                            <p>SNUNet extracts and compares features through attention mechanisms.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="timeline-step" data-scroll>
+                        <div class="step-marker">
+                            <span>03</span>
+                        </div>
+                        <div class="step-content">
+                            <div class="step-icon orange">
+                                <i class="fas fa-search-location"></i>
+                            </div>
+                            <h4>Change Detection</h4>
+                            <p>Generate precise change masks with confidence scores.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="timeline-step" data-scroll>
+                        <div class="step-marker">
+                            <span>04</span>
+                        </div>
+                        <div class="step-content">
+                            <div class="step-icon green">
+                                <i class="fas fa-chart-bar"></i>
+                            </div>
+                            <h4>Visualize Results</h4>
+                            <p>Interactive overlays, statistics, and exportable reports.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-      <!-- RIGHT: STICKY IMAGES -->
-      <div class="image-column">
-        <div class="image-stack">
-          <!-- Image 1: Detailed City Grid (NY style) -->
-          <img src="https://images.unsplash.com/photo-1480714378408-67cf0d13bc1b?auto=format&fit=crop&q=80&w=1000"
-            class="sticky-img active" alt="Top-down aerial view of organized city infrastructure">
-
-          <!-- Image 2: Digital/Data Network (Abstract Velocity) -->
-          <img src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&q=80&w=1000"
-            class="sticky-img" alt="Digital data network overlay on earth">
-
-          <!-- Image 3: Dense Forest (Environmental) -->
-          <img src="https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&q=80&w=1000"
-            class="sticky-img" alt="Vast green forest landscape">
+            <div class="architecture-preview">
+                <div class="arch-visual">
+                    <div class="arch-flow">
+                        <div class="arch-node input">
+                            <div class="node-icon"><i class="fas fa-image"></i></div>
+                            <span>T1 Input</span>
+                        </div>
+                        <div class="arch-arrow"><i class="fas fa-chevron-right"></i></div>
+                        <div class="arch-node encoder">
+                            <div class="node-icon"><i class="fas fa-compress-arrows-alt"></i></div>
+                            <span>Encoder</span>
+                        </div>
+                        <div class="arch-arrow"><i class="fas fa-chevron-right"></i></div>
+                        <div class="arch-node attention">
+                            <div class="node-icon"><i class="fas fa-crosshairs"></i></div>
+                            <span>CBAM</span>
+                        </div>
+                        <div class="arch-arrow"><i class="fas fa-chevron-right"></i></div>
+                        <div class="arch-node decoder">
+                            <div class="node-icon"><i class="fas fa-expand-arrows-alt"></i></div>
+                            <span>Decoder</span>
+                        </div>
+                        <div class="arch-arrow"><i class="fas fa-chevron-right"></i></div>
+                        <div class="arch-node output">
+                            <div class="node-icon"><i class="fas fa-map"></i></div>
+                            <span>Mask</span>
+                        </div>
+                    </div>
+                    <div class="arch-flow secondary">
+                        <div class="arch-node input">
+                            <div class="node-icon"><i class="fas fa-image"></i></div>
+                            <span>T2 Input</span>
+                        </div>
+                        <div class="arch-connector"></div>
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
+    </section>
 
-    </div>
-  </section>
+    <!-- About Section -->
+    <section id="about" class="about-section">
+        <div class="section-container">
+            <div class="about-grid">
+                <div class="about-content" data-scroll>
+                    <span class="section-tag">
+                        <i class="fas fa-rocket"></i>
+                        About
+                    </span>
+                    <h2 class="section-title">Built for <span class="gradient-text">ISRO</span></h2>
+                    <p class="about-desc">
+                        LandCover AI is developed as part of an advanced research initiative for satellite-based 
+                        environmental monitoring. Our system helps track urbanization, deforestation, natural disasters, 
+                        and climate change effects with unprecedented accuracy.
+                    </p>
+                    
+                    <div class="tech-stack">
+                        <div class="stack-item">
+                            <i class="fab fa-python"></i>
+                            <span>Python</span>
+                        </div>
+                        <div class="stack-item">
+                            <img src="https://pytorch.org/assets/images/pytorch-logo.png" alt="PyTorch" style="height: 24px;">
+                            <span>PyTorch</span>
+                        </div>
+                        <div class="stack-item">
+                            <i class="fas fa-database"></i>
+                            <span>LEVIR-CD</span>
+                        </div>
+                        <div class="stack-item">
+                            <i class="fab fa-github"></i>
+                            <span>Open Source</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="about-visual" data-scroll>
+                    <div class="globe-wrapper">
+                        <div class="globe-glow"></div>
+                        <div class="globe-container">
+                            <div class="globe-ring ring-1">
+                                <div class="ring-dot"></div>
+                            </div>
+                            <div class="globe-ring ring-2">
+                                <div class="ring-dot"></div>
+                            </div>
+                            <div class="globe-ring ring-3">
+                                <div class="ring-dot"></div>
+                            </div>
+                            <div class="globe-core">
+                                <i class="fas fa-globe-asia"></i>
+                            </div>
+                        </div>
+                        <div class="satellite-wrapper">
+                            <div class="satellite">
+                                <i class="fas fa-satellite"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
-  <!-- CTA FOOTER -->
-  <section class="section text-center" style="padding-bottom: 120px;">
-    <div class="container">
-      <h2 style="margin-bottom: 32px;">Ready to analyze your data?</h2>
-      <a href="/app" class="btn btn-primary" style="height: 56px; padding: 0 40px; font-size: 16px;">Initialize
-        Workbench</a>
-    </div>
-  </section>
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <div class="section-container">
+            <div class="cta-card" data-scroll>
+                <div class="cta-glow"></div>
+                <div class="cta-content">
+                    <h2>Ready to Detect <span class="gradient-text">Changes</span>?</h2>
+                    <p>Upload your satellite images and experience the power of AI-driven change detection.</p>
+                    <a href="/app" class="btn-primary large">
+                        <i class="fas fa-rocket"></i>
+                        <span>Launch Console</span>
+                        <div class="btn-shine"></div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
 
-  <!-- FOOTER -->
-  <footer class="footer">
-    <div class="container">
-      <div class="brand-center">
-        <div class="brand-dot"></div>
-        LandCover AI
-      </div>
-      <p class="copyright">© 2026 LandCover Systems.</p>
-    </div>
-  </footer>
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-main">
+                <div class="footer-brand">
+                    <a href="/" class="logo">
+                        <div class="logo-icon">
+                            <i class="fas fa-satellite"></i>
+                        </div>
+                        <span class="logo-text">LandCover<span class="highlight">AI</span></span>
+                    </a>
+                    <p>Advanced satellite imagery change detection powered by deep learning.</p>
+                    <div class="social-links">
+                        <a href="https://github.com/kunj290506/LandCover_ChangeDetection" target="_blank">
+                            <i class="fab fa-github"></i>
+                        </a>
+                        <a href="#"><i class="fab fa-linkedin"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                    </div>
+                </div>
+                
+                <div class="footer-links">
+                    <div class="footer-col">
+                        <h4>Product</h4>
+                        <a href="#features">Features</a>
+                        <a href="#technology">Technology</a>
+                        <a href="/app">Console</a>
+                    </div>
+                    <div class="footer-col">
+                        <h4>Resources</h4>
+                        <a href="#">Documentation</a>
+                        <a href="#">API Reference</a>
+                        <a href="#">Examples</a>
+                    </div>
+                    <div class="footer-col">
+                        <h4>Legal</h4>
+                        <a href="#">Privacy Policy</a>
+                        <a href="#">Terms of Service</a>
+                        <a href="#">License</a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2024 LandCover AI. Built for ISRO Research Initiative.</p>
+                <div class="footer-badge">
+                    <span>Made with</span>
+                    <i class="fas fa-heart"></i>
+                    <span>in India</span>
+                </div>
+            </div>
+        </div>
+    </footer>
 
-  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <!-- Scripts -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 </body>
-
 </html>
