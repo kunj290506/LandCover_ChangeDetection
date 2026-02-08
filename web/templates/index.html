@@ -5,6 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LandCover AI | Precision Change Detection</title>
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🛰️</text></svg>">
 
     <!-- Fonts: SF Pro Display clone (Inter) for now, as we can't serve local fonts easily without files -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -20,7 +22,8 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 
     <!-- Smooth Scroll -->
-    <script src="https://unpkg.com/@studio-freight/lenis@1.0.29/dist/lenis.min.js"></script>
+    <script src="https://unpkg.com/lenis@1.0.45/dist/lenis.min.js"></script>
+
     <!-- GSAP -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
@@ -143,53 +146,56 @@
                     </div>
                 </div>
             </div>
-            <!-- Technology Section -->
-            <section id="technology" class="tech-section">
-                <div class="section-max">
-                    <div class="section-header">
-                        <h2 class="section-title">Built for Performance.</h2>
-                        <p class="section-desc">Our stack is optimized for low-latency inference on high-resolution
-                            satellite
-                            imagery.</p>
-                    </div>
-                    <div class="tech-grid">
-                        <div class="tech-card">
-                            <i class="fab fa-python tech-icon"></i>
-                            <h4>PyTorch Engine</h4>
-                            <p>State-of-the-art neural networks for pixel-level segmentation.</p>
-                        </div>
-                        <div class="tech-card">
-                            <i class="fas fa-brain tech-icon"></i>
-                            <h4>DeepCover v2</h4>
-                            <p>Optimized for multi-temporal feature extraction.</p>
-                        </div>
-                    </div>
-                </div>
-            </section>
+        </section>
 
-            <!-- About Section -->
-            <section id="about" class="about-section">
-                <div class="section-max">
-                    <div class="section-header">
-                        <h2 class="section-title">The Mission.</h2>
-                        <p class="section-desc">Democratizing access to geospatial intelligence for environmental
-                            conservation and urban planning.</p>
+        <!-- Technology Section -->
+        <section id="technology" class="tech-section">
+            <div class="section-max">
+                <div class="section-header">
+                    <h2 class="section-title">Built for Performance.</h2>
+                    <p class="section-desc">Our stack is optimized for low-latency inference on high-resolution
+                        satellite
+                        imagery.</p>
+                </div>
+                <div class="tech-grid">
+                    <div class="tech-card">
+                        <i class="fab fa-python tech-icon"></i>
+                        <h4>PyTorch Engine</h4>
+                        <p>State-of-the-art neural networks for pixel-level segmentation.</p>
+                    </div>
+                    <div class="tech-card">
+                        <i class="fas fa-brain tech-icon"></i>
+                        <h4>DeepCover v2</h4>
+                        <p>Optimized for multi-temporal feature extraction.</p>
                     </div>
                 </div>
-            </section>
+            </div>
+        </section>
 
-            <!-- Footer -->
-            <footer class="footer">
-                <div class="footer-content">
-                    <div class="footer-left">
-                        <p>&copy; 2024 LandCover AI. All rights reserved.</p>
-                    </div>
-                    <div class="footer-right">
-                        <a href="#" style="margin-left: 20px;">Privacy</a>
-                        <a href="#" style="margin-left: 20px;">Terms</a>
-                    </div>
+        <!-- About Section -->
+        <section id="about" class="about-section">
+            <div class="section-max">
+                <div class="section-header">
+                    <h2 class="section-title">The Mission.</h2>
+                    <p class="section-desc">Democratizing access to geospatial intelligence for environmental
+                        conservation and urban planning.</p>
                 </div>
-            </footer>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="footer-content">
+                <div class="footer-left">
+                    <p>&copy; 2024 LandCover AI. All rights reserved.</p>
+                </div>
+                <div class="footer-right">
+                    <a href="#" style="margin-left: 20px;">Privacy</a>
+                    <a href="#" style="margin-left: 20px;">Terms</a>
+                </div>
+            </div>
+        </footer>
+
 
     </main>
 

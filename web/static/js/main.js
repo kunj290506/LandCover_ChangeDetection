@@ -59,19 +59,24 @@ function initCursor() {
    =================================== */
 
 function initLandingPage() {
-    // 1. Initialize Lenis (Premium Inertia)
-    const lenis = new Lenis({
-        duration: 1.2,
-        easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-        smooth: true,
-        direction: 'vertical'
-    });
+    // 1. Initialize Lenis (Premium Inertia) - Only if library loaded
+    if (typeof Lenis !== 'undefined') {
+        const lenis = new Lenis({
+            duration: 1.2,
+            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+            smooth: true,
+            direction: 'vertical'
+        });
 
-    function raf(time) {
-        lenis.raf(time);
+        function raf(time) {
+            lenis.raf(time);
+            requestAnimationFrame(raf);
+        }
         requestAnimationFrame(raf);
+    } else {
+        console.warn('Lenis library not loaded. Smooth scrolling disabled.');
     }
-    requestAnimationFrame(raf);
+
 
     // 2. Navbar Scroll Effect (Dynamic Island shrink)
     const navbar = document.querySelector('.navbar');
@@ -88,7 +93,70 @@ function initLandingPage() {
         gsap.registerPlugin(ScrollTrigger);
         runHeroSequence();
         runBentoSequence();
+        initInteractiveEffects(); // New: Magnetic and Tilt
     }
+}
+
+function initInteractiveEffects() {
+    // 1. Magnetic Elements (Buttons & Nav)
+    const magnetics = document.querySelectorAll('.nav-link, .nav-cta, .btn, .nav-logo');
+    magnetics.forEach(el => {
+        el.addEventListener('mousemove', (e) => {
+            const rect = el.getBoundingClientRect();
+            const x = e.clientX - rect.left - rect.width / 2;
+            const y = e.clientY - rect.top - rect.height / 2;
+
+            gsap.to(el, {
+                x: x * 0.3,
+                y: y * 0.3,
+                duration: 0.5,
+                ease: "power2.out"
+            });
+        });
+
+        el.addEventListener('mouseleave', () => {
+            gsap.to(el, {
+                x: 0,
+                y: 0,
+                duration: 0.7,
+                ease: "elastic.out(1, 0.3)"
+            });
+        });
+    });
+
+    // 2. Parallax Tilt (Cards)
+    const cards = document.querySelectorAll('.bento-item, .tech-card');
+    cards.forEach(card => {
+        card.addEventListener('mousemove', (e) => {
+            const rect = card.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+
+            const centerX = rect.width / 2;
+            const centerY = rect.height / 2;
+
+            const rotateX = (y - centerY) / 10;
+            const rotateY = (centerX - x) / 10;
+
+            gsap.to(card, {
+                rotateX: rotateX,
+                rotateY: rotateY,
+                scale: 1.02,
+                duration: 0.5,
+                ease: "power2.out"
+            });
+        });
+
+        card.addEventListener('mouseleave', () => {
+            gsap.to(card, {
+                rotateX: 0,
+                rotateY: 0,
+                scale: 1,
+                duration: 0.7,
+                ease: "power2.out"
+            });
+        });
+    });
 }
 
 function runHeroSequence() {

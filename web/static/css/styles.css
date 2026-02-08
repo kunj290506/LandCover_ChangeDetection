@@ -13,10 +13,10 @@
     --accent: #0071E3;
     --accent-gradient: linear-gradient(135deg, #0071E3 0%, #00C7FF 100%);
 
-    /* Text Colors */
-    --text-primary: #1D1D1F;
-    --text-secondary: #48484A;
-    --text-tertiary: #8E8E93;
+    /* Text Colors - Pure Black for Maximum Legibility */
+    --text-primary: #000000;
+    --text-secondary: #000000;
+    --text-tertiary: #000000;
 
     /* Glassmorphism Variables */
     --glass-bg: rgba(255, 255, 255, 0.8);
@@ -58,30 +58,36 @@ body {
 
 /* Tech Section (Contrast) */
 .tech-section {
-    background: var(--bg-dark);
-    color: #fff;
-    padding: 160px 20px;
+    background: linear-gradient(180deg, #FFFFFF 0%, #F5F5F7 100%);
+    color: #000000;
+    padding: 80px 20px;
+    /* Reduced from 160px */
+    position: relative;
+    overflow: hidden;
 }
 
 .tech-section .section-title,
 .tech-section .tech-card h4 {
-    color: #fff;
+    color: #000000;
 }
 
 .tech-section .section-desc,
 .tech-section .tech-card p {
-    color: #8E8E93;
+    color: #000000;
 }
 
 .tech-card {
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
+    background: #FFFFFF;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
 }
 
 .tech-card:hover {
-    background: rgba(255, 255, 255, 0.08);
+    background: #FFFFFF;
     transform: translateY(-10px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
 }
 
 /* ===================================
@@ -308,8 +314,8 @@ html.lenis body {
 }
 
 .nav-cta {
-    background: var(--text-primary);
-    color: #fff;
+    background: #F0F0F5;
+    color: #000000;
     padding: 8px 18px;
     border-radius: 999px;
     font-size: 13px;
@@ -329,13 +335,15 @@ html.lenis body {
 /* Hero */
 .hero-section {
     position: relative;
-    min-height: 100vh;
+    min-height: 80vh;
+    /* Reduced from 100vh */
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     text-align: center;
-    padding: 120px 20px 60px;
+    padding: 80px 20px 40px;
+    /* Reduced from 120px ... 60px */
 }
 
 .hero-bg-visual {
@@ -384,10 +392,7 @@ html.lenis body {
     font-weight: 700;
     margin-bottom: 24px;
     letter-spacing: -0.03em;
-    background: linear-gradient(180deg, #1D1D1F 20%, #86868B 100%);
-    background-clip: text;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    color: #000000;
     opacity: 1;
     /* FAILSAFE */
 }
@@ -422,8 +427,9 @@ html.lenis body {
 }
 
 .btn-primary {
-    background: var(--accent);
-    color: #fff;
+    background: #FFFFFF;
+    border: 1px solid var(--accent);
+    color: #000000;
 }
 
 .btn-secondary {
@@ -435,9 +441,11 @@ html.lenis body {
 .features-section,
 .tech-section,
 .about-section {
-    padding: 140px 20px;
+    padding: 70px 20px;
+    /* Reduced from 140px */
     background: #fff;
-    min-height: 50vh;
+    min-height: auto;
+    /* Removed fixed min-height */
 }
 
 .tech-section {
@@ -451,7 +459,8 @@ html.lenis body {
 
 .section-header {
     text-align: center;
-    margin-bottom: 80px;
+    margin-bottom: 40px;
+    /* Reduced from 80px */
 }
 
 .section-title {
@@ -469,7 +478,8 @@ html.lenis body {
 .bento-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 24px;
+    gap: 16px;
+    /* Reduced from 24px */
 }
 
 .bento-item {
@@ -478,7 +488,9 @@ html.lenis body {
     padding: 40px;
     position: relative;
     overflow: hidden;
-    transition: all 0.4s var(--ease-spring);
+    transition: box-shadow 0.4s var(--ease-spring);
+    transform-style: preserve-3d;
+    perspective: 1000px;
 }
 
 .bento-item:hover {
@@ -498,11 +510,20 @@ html.lenis body {
 }
 
 .tech-card {
-    background: #fff;
+    background: rgba(255, 255, 255, 0.03);
     padding: 40px;
     border-radius: var(--radius-md);
     text-align: center;
-    border: 1px solid rgba(0, 0, 0, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    transform-style: preserve-3d;
+    perspective: 1000px;
+    transition: all 0.4s var(--ease-spring);
+}
+
+.tech-card:hover {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.15);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
 }
 
 .tech-icon {
@@ -540,15 +561,18 @@ html.lenis body {
 }
 
 .app-sidebar {
-    width: 300px;
+    width: 280px;
+    /* Reduced from 300px */
     background: rgba(255, 255, 255, 0.8);
     backdrop-filter: blur(30px) saturate(200%);
     -webkit-backdrop-filter: blur(30px) saturate(200%);
     border-right: 1px solid rgba(0, 0, 0, 0.08);
     display: flex;
     flex-direction: column;
-    padding: 24px;
-    gap: 32px;
+    padding: 20px;
+    /* Reduced from 24px */
+    gap: 20px;
+    /* Reduced from 32px */
 }
 
 /* User Flow Steps */
@@ -587,7 +611,8 @@ html.lenis body {
 .upload-group {
     display: grid;
     grid-template-columns: 1fr;
-    gap: 12px;
+    gap: 8px;
+    /* Reduced from 12px */
 }
 
 .drop-zone {
@@ -621,15 +646,18 @@ html.lenis body {
 }
 
 .preview-thumb {
-    max-height: 100px;
-    border-radius: 6px;
+    width: 100%;
+    height: 200px;
+    /* Intead of max-height: 100px */
+    border-radius: 8px;
     object-fit: cover;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .btn-analyze {
     width: 100%;
-    background: var(--accent);
-    color: #fff;
+    background: #F0F0F5;
+    color: #000000;
     border-radius: 12px;
     padding: 14px;
     font-size: 15px;
@@ -687,8 +715,8 @@ html.lenis body {
 .m-icon {
     width: 40px;
     height: 40px;
-    background: var(--accent);
-    color: #fff;
+    background: rgba(0, 113, 227, 0.1);
+    color: #000000;
     border-radius: 10px;
     display: flex;
     align-items: center;
@@ -740,8 +768,10 @@ html.lenis body {
     flex-direction: row-reverse;
     width: 100%;
     height: 100%;
-    gap: 30px;
-    padding: 20px;
+    gap: 20px;
+    /* Reduced from 30px */
+    padding: 15px;
+    /* Reduced from 20px */
 }
 
 .compare-container {
