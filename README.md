@@ -26,6 +26,19 @@ LandCover_ChangeDetection/
 ├── train_list.txt
 ├── val_list.txt
 └── test_list.txt
+
+Enterprise deployment assets are in `services/`, `infra/`, and `docs/`.
+
+**Quick Start**: See [QUICKSTART.md](QUICKSTART.md) for rapid deployment.
+
+## Enterprise Services
+
+- **Gateway API**: FastAPI service with JWT auth, RBAC, rate limiting
+- **Inference Service**: GPU-enabled real-time change detection
+- **Training Service**: Production ML training with MLflow tracking  
+- **Batch Worker**: Asynchronous processing for large datasets
+- **MLflow**: Experiment tracking and model registry
+- **Monitoring**: Prometheus + Grafana observability stack
 ```
 
 ## Requirements
@@ -207,6 +220,14 @@ MIT License
 - LEVIR-CD Dataset: https://justchenhao.github.io/LEVIR/
 - SNUNet: "SNUNet-CD: A Densely Connected Siamese Network for Change Detection"
 - CBAM: "CBAM: Convolutional Block Attention Module"
+
+## Enterprise Docs
+
+- [Architecture](docs/architecture.md)
+- [Deployment Guide](docs/deployment_guide.md)
+- [API Contract](docs/api_contract.md)
+- [Operations Runbook](docs/operations_runbook.md)
+- [CI/CD](docs/ci_cd.md)
 
 ## Contact
 

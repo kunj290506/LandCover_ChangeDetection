@@ -1,0 +1,13 @@
+fastapi
+mlflow
+pydantic
+uvicorn
+torch
+torchvision
+opencv-python
+albumentations
+scikit-learn
+numpy
+pillow
+pyyaml
+tqdm

@@ -1,0 +1,8 @@
+boto3
+fastapi
+mlflow
+pillow
+pydantic
+torch
+torchvision
+uvicorn

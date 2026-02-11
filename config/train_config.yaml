@@ -1,0 +1,31 @@
+# Optimized Training Configuration for Memory Efficiency
+
+# Model Configuration (Memory Optimized)
+base_channel: 16  # Reduced from 32 for memory efficiency
+use_attention: true
+
+# Training Hyperparameters (Memory Optimized)
+epochs: 30  # Reduced for faster training
+batch_size: 4  # Reduced for memory efficiency
+lr: 1e-4
+weight_decay: 1e-4
+eta_min: 1e-6
+
+# Data Configuration (Memory Optimized)
+patch_size: 256
+num_workers: 2  # Reduced for memory efficiency
+
+# Loss Configuration
+weight_bce: 0.7
+weight_dice: 0.3
+
+# Early Stopping (Optimized)
+patience: 10  # Reduced for faster convergence
+
+# Model Performance Threshold
+min_f1_for_registration: 0.4  # Lowered for easier registration
+
+# Dataset Paths
+dataset_path: "data/LEVIR-CD-patches"
+train_list: "train_list.txt"
+val_list: "val_list.txt"

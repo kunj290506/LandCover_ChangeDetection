@@ -1,0 +1,10 @@
+fastapi
+mlflow
+pydantic
+python-json-logger
+pyjwt
+redis
+requests
+rq
+slowapi
+uvicorn

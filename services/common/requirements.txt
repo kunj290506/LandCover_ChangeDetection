@@ -1,0 +1,7 @@
+boto3
+fastapi
+psycopg2-binary
+pydantic
+pyjwt
+python-json-logger
+sqlalchemy

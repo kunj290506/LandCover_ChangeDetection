@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: training
+  namespace: landcover
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: training
+  template:
+    metadata:
+      labels:
+        app: training
+    spec:
+      containers:
+        - name: training
+          image: landcover/training:latest
+          ports:
+            - containerPort: 8002
+          envFrom:
+            - configMapRef:
+                name: landcover-config
+            - secretRef:
+                name: landcover-secrets
+          readinessProbe:
+            httpGet:
+              path: /readyz
+              port: 8002
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 8002

@@ -1,48 +1,38 @@
-# Data
+# Data files
 data/
 *.zip
 *.tar.gz
-*.tif
-*.tiff
-
-# Documentation
-*.pdf
-
-# Model Checkpoints
-checkpoints/
-*.pth
-# Outputs
-output/
-output.tif
-
-# Python cache and compiled files
-__pycache__/
-*.py[cod]
-*$py.class
-*.so
-*.egg
-*.egg-info/
-dist/
-build/
-
-# Virtual environments
-env/
-venv/
-ENV/
-.venv/
 
 # Model checkpoints and outputs
 checkpoints/
-checkpoints_laptop/
-*.pth
-*.pt
-*.ckpt
-
-# Data folders
-data/raw/
+checkpoints_optimized/
 output/
+*.pth
+*.pkl
+*.h5
 
-# IDE and editor files
+# Logs and temporary files
+*.log
+logs/
+*.tmp
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# IDE files
 .vscode/
 .idea/
 *.swp
@@ -51,13 +41,38 @@ output/
 
 # OS files
 .DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
 Thumbs.db
+
+# MLflow artifacts (keep structure but not large files)
+mlruns/*/artifacts/
+mlflow-artifacts/
+
+# Docker volumes
+postgres_data/
+minio_data/
+redis_data/
+
+# Large PDFs and documentation artifacts
+*.pdf
+
+# Build artifacts
+build/
+dist/
+*.egg-info/
 
 # Jupyter notebooks checkpoints
 .ipynb_checkpoints/
 
-# Training logs
-*.log
-wandb/
-runs/
-web/uploads/
+# Large media files
+*.mp4
+*.avi
+*.mov
+
+# Backup files
+*.bak
+*.backup
