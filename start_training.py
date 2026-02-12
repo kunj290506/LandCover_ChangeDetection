@@ -1,2 +1,115 @@
 #!/usr/bin/env python3
-\"\"\"\nMemory-Optimized Training Launcher\nRun this script to start training immediately\n\"\"\"\n\nimport os\nimport sys\nimport torch\nimport logging\nfrom pathlib import Path\n\n# Set up paths\nproject_root = Path(__file__).parent\nsys.path.insert(0, str(project_root / \"src\"))\nsys.path.insert(0, str(project_root / \"services\" / \"training\" / \"app\"))\nsys.path.insert(0, str(project_root / \"services\" / \"common\"))\n\n# Import training components\nfrom trainer import run_training\nfrom landcover_common.settings import Settings\n\n\ndef setup_logging():\n    \"\"\"Setup simple console logging\"\"\"\n    logging.basicConfig(\n        level=logging.INFO,\n        format='%(asctime)s - %(levelname)s - %(message)s'\n    )\n\n\ndef check_memory():\n    \"\"\"Check available memory and GPU\"\"\"\n    if torch.cuda.is_available():\n        gpu_memory = torch.cuda.get_device_properties(0).total_memory / 1e9\n        print(f\"🔥 GPU Available: {torch.cuda.get_device_name(0)}\")\n        print(f\"🔥 GPU Memory: {gpu_memory:.1f} GB\")\n    else:\n        print(\"⚠️  No GPU detected - using CPU (will be slower)\")\n    \n    # Clear GPU cache if available\n    if torch.cuda.is_available():\n        torch.cuda.empty_cache()\n        print(\"🧹 GPU cache cleared\")\n\n\ndef check_dataset():\n    \"\"\"Check if dataset exists\"\"\"\n    dataset_path = project_root / \"data\" / \"LEVIR-CD-patches\"\n    train_list = project_root / \"train_list.txt\"\n    \n    if not dataset_path.exists():\n        print(f\"❌ Dataset not found at {dataset_path}\")\n        print(\"Please ensure LEVIR-CD dataset is available\")\n        return False\n    \n    if not train_list.exists():\n        print(f\"❌ Training list not found at {train_list}\")\n        return False\n    \n    print(f\"✅ Dataset found at {dataset_path}\")\n    return True\n\n\ndef start_training():\n    \"\"\"Start optimized training\"\"\"\n    print(\"🚀 Starting Memory-Optimized Training...\")\n    \n    # Set memory efficient settings\n    os.environ[\"PYTORCH_CUDA_ALLOC_CONF\"] = \"max_split_size_mb:128\"\n    \n    # Use local paths for training\n    dataset_uri = str(project_root / \"data\" / \"LEVIR-CD-patches\")\n    config_uri = str(project_root / \"config\" / \"train_config.yaml\")\n    \n    try:\n        # Start training\n        run_id = run_training(\n            dataset_uri=dataset_uri,\n            config_uri=config_uri,\n            register_model=True\n        )\n        \n        print(f\"🎉 Training completed! MLflow Run ID: {run_id}\")\n        print(f\"📊 View results at: http://localhost:5000\")\n        \n    except Exception as e:\n        print(f\"❌ Training failed: {e}\")\n        import traceback\n        traceback.print_exc()\n\n\nif __name__ == \"__main__\":\n    print(\"=\" * 60)\n    print(\"🎯 LAND COVER CHANGE DETECTION - TRAINING READY\")\n    print(\"=\" * 60)\n    \n    setup_logging()\n    check_memory()\n    \n    if check_dataset():\n        print(\"\\n✅ All systems ready for training!\")\n        print(\"💡 Type 'go' to start training or Ctrl+C to exit\")\n        \n        # Wait for user input\n        try:\n            user_input = input(\"\\n👉 Command: \").strip().lower()\n            if user_input == \"go\":\n                start_training()\n            else:\n                print(\"Training cancelled.\")\n        except KeyboardInterrupt:\n            print(\"\\nTraining cancelled.\")\n    else:\n        print(\"\\n❌ Please fix dataset issues before training.\")\n
+"""
+Memory-Optimized Training Launcher
+Run this script to start training immediately
+"""
+
+import os
+import sys
+import torch
+import logging
+from pathlib import Path
+
+# Set up paths
+project_root = Path(__file__).parent
+sys.path.insert(0, str(project_root / "src"))
+sys.path.insert(0, str(project_root / "services" / "training" / "app"))
+sys.path.insert(0, str(project_root / "services" / "common"))
+
+# Import training components
+from trainer import run_training
+from landcover_common.settings import Settings
+
+
+def setup_logging():
+    """Setup simple console logging"""
+    logging.basicConfig(
+        level=logging.INFO,
+        format='%(asctime)s - %(levelname)s - %(message)s'
+    )
+
+
+def check_memory():
+    """Check available memory and GPU"""
+    if torch.cuda.is_available():
+        gpu_memory = torch.cuda.get_device_properties(0).total_memory / 1e9
+        print(f"GPU Available: {torch.cuda.get_device_name(0)}")
+        print(f"GPU Memory: {gpu_memory:.1f} GB")
+    else:
+        print("WARNING: No GPU detected - using CPU (will be slower)")
+    
+    # Clear GPU cache if available
+    if torch.cuda.is_available():
+        torch.cuda.empty_cache()
+        print("GPU cache cleared")
+
+
+def check_dataset():
+    """Check if dataset exists"""
+    dataset_path = project_root / "data" / "LEVIR-CD-patches"
+    train_list = project_root / "train_list.txt"
+    
+    if not dataset_path.exists():
+        print(f"ERROR: Dataset not found at {dataset_path}")
+        print("Please ensure LEVIR-CD dataset is available")
+        return False
+    
+    if not train_list.exists():
+        print(f"ERROR: Training list not found at {train_list}")
+        return False
+    
+    print(f"SUCCESS: Dataset found at {dataset_path}")
+    return True
+
+
+def start_training():
+    """Start optimized training"""
+    print("Starting Memory-Optimized Training...")
+    
+    # Set memory efficient settings
+    os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "max_split_size_mb:128"
+    
+    # Use local paths for training
+    dataset_uri = str(project_root / "data" / "LEVIR-CD-patches")
+    config_uri = str(project_root / "config" / "train_config.yaml")
+    
+    try:
+        # Start training
+        run_id = run_training(
+            dataset_uri=dataset_uri,
+            config_uri=config_uri,
+            register_model=True
+        )
+        
+        print(f"TRAINING COMPLETED! MLflow Run ID: {run_id}")
+        print(f"View results at: http://localhost:5000")
+        
+    except Exception as e:
+        print(f"ERROR: Training failed: {e}")
+        import traceback
+        traceback.print_exc()
+
+
+if __name__ == "__main__":
+    print("=" * 60)
+    print("LAND COVER CHANGE DETECTION - TRAINING READY")
+    print("=" * 60)
+    
+    setup_logging()
+    check_memory()
+    
+    if check_dataset():
+        print("\nAll systems ready for training!")
+        print("Type 'go' to start training or Ctrl+C to exit")
+        
+        # Wait for user input
+        try:
+            user_input = input("\nCommand: ").strip().lower()
+            if user_input == "go":
+                start_training()
+            else:
+                print("Training cancelled.")
+        except KeyboardInterrupt:
+            print("\nTraining cancelled.")
+    else:
+        print("\nERROR: Please fix dataset issues before training.")
