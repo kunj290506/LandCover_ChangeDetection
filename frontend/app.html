@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TerraSense | Workspace</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #FFFFFF;
+            --text-main: #111111;
+            --text-sub: #666666;
+            --border: #E5E5E5;
+            --surface: #FAFAFA;
+            --surface-hover: #F4F4F5;
+            --accent: #111111;
+            --success: #10B981;
+            --error: #EF4444;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        nav {
+            padding: 24px 48px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .back-link {
+            text-decoration: none;
+            color: var(--text-sub);
+            font-size: 14px;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .back-link:hover {
+            color: var(--text-main);
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--success);
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 8px;
+        }
+
+        .status-badge {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-sub);
+            display: flex;
+            align-items: center;
+            background: var(--surface);
+            padding: 6px 12px;
+            border-radius: 99px;
+            border: 1px solid var(--border);
+        }
+
+        .main {
+            flex: 1;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+            padding: 60px 48px;
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 60px;
+        }
+
+        /* Upload Area */
+        .upload-section {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .upload-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            height: 400px;
+        }
+
+        .drop-zone {
+            border: 1px solid var(--border);
+            background: var(--surface);
+            border-radius: 4px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .drop-zone:hover {
+            background: var(--surface-hover);
+            border-color: #D4D4D4;
+        }
+
+        .drop-zone img {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            padding: 20px;
+            z-index: 10;
+        }
+
+        .label {
+            font-size: 14px;
+            font-weight: 500;
+            margin-top: 16px;
+            color: var(--text-main);
+        }
+
+        .sub-label {
+            font-size: 13px;
+            color: var(--text-sub);
+            margin-top: 4px;
+        }
+
+        /* Sidebar / Controls */
+        .sidebar {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: 32px;
+            height: fit-content;
+            position: sticky;
+            top: 100px;
+        }
+
+        h2 {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 24px;
+            letter-spacing: -0.01em;
+        }
+
+        .metric-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 16px 0;
+            border-bottom: 1px solid var(--border);
+            font-size: 14px;
+        }
+
+        .metric-row:last-child {
+            border-bottom: none;
+        }
+
+        .metric-val {
+            font-weight: 600;
+        }
+
+        .btn-primary {
+            width: 100%;
+            background: var(--text-main);
+            color: white;
+            border: none;
+            padding: 16px;
+            font-size: 15px;
+            font-weight: 500;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 32px;
+            transition: opacity 0.2s;
+        }
+
+        .btn-primary:hover {
+            opacity: 0.9;
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        .btn-secondary {
+            width: 100%;
+            background: transparent;
+            color: var(--text-main);
+            border: 1px solid var(--border);
+            padding: 16px;
+            font-size: 15px;
+            font-weight: 500;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 16px;
+            transition: all 0.2s;
+        }
+
+        .btn-secondary:hover {
+            background: var(--surface-hover);
+            border-color: var(--text-main);
+        }
+
+
+
+        .overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(255, 255, 255, 0.9);
+            z-index: 999;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 2px solid var(--border);
+            border-top-color: var(--text-main);
+            border-radius: 50%;
+            animation: spin 0.8s infinite linear;
+            margin-bottom: 16px;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Result Container to match Inputs */
+        .result-container {
+            height: 400px;
+            border: 1px solid var(--border);
+            background: var(--surface);
+            border-radius: 4px;
+            position: relative;
+            margin-top: 24px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #resultImage {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            padding: 24px;
+            display: block;
+            /* ensure it behaves */
+        }
+
+        @media (max-width: 1024px) {
+            .main {
+                grid-template-columns: 1fr;
+            }
+
+            .upload-row {
+                height: 300px;
+            }
+
+            .result-container {
+                height: 300px;
+            }
+
+            .sidebar {
+                position: static;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav>
+        <a href="index.html" class="back-link">← Return to Home</a>
+        <div class="status-badge">
+            <span class="status-dot"></span>
+            System Online
+        </div>
+    </nav>
+
+    <main class="main">
+        <div class="upload-section">
+            <div class="upload-row">
+                <div class="drop-zone" id="beforeZone">
+                    <input type="file" id="beforeInput" hidden accept="image/*">
+                    <span style="font-size: 24px; opacity: 0.3;">+</span>
+                    <div class="label">Timepoint A</div>
+                    <div class="sub-label">Drag & Drop</div>
+                </div>
+                <div class="drop-zone" id="afterZone">
+                    <input type="file" id="afterInput" hidden accept="image/*">
+                    <span style="font-size: 24px; opacity: 0.3;">+</span>
+                    <div class="label">Timepoint B</div>
+                    <div class="sub-label">Drag & Drop</div>
+                </div>
+            </div>
+
+            <div class="result-container" style="display: none;" id="resultContainer">
+                <div class="label" style="position: absolute; top: 16px; left: 24px; z-index: 20;">Change Detection
+                    Result</div>
+                <img id="resultImage" alt="Change Mask">
+            </div>
+        </div>
+
+        <aside class="sidebar">
+            <h2>Analysis Control</h2>
+
+            <div class="metric-row">
+                <span>Model State</span>
+                <span class="metric-val">Ready</span>
+            </div>
+            <div class="metric-row">
+                <span>Target Class</span>
+                <span class="metric-val">Land Cover</span>
+            </div>
+            <div class="metric-row">
+                <span>Resolution</span>
+                <span class="metric-val">256x256 px</span>
+            </div>
+
+            <div id="resultsPanel"
+                style="display: none; margin-top: 32px; padding-top: 24px; border-top: 1px solid var(--border);">
+                <div class="metric-row" style="color: var(--text-sub);">RESULTS</div>
+                <div class="metric-row">
+                    <span>Change Detected</span>
+                    <span class="metric-val" id="resStatus">-</span>
+                </div>
+                <div class="metric-row">
+                    <span>Affected Area</span>
+                    <span class="metric-val" id="resRatio">0%</span>
+                </div>
+            </div>
+
+            <button id="detectBtn" class="btn-primary" disabled>Run Inference</button>
+            <button id="resetBtn" class="btn-secondary" style="display: none;">Test Another Image</button>
+        </aside>
+    </main>
+
+    <div id="overlay" class="overlay">
+        <div class="spinner"></div>
+        <div style="font-size: 14px; font-weight: 500;">Processing...</div>
+    </div>
+
+    <script>
+        const state = { before: null, after: null };
+        const API_URL = 'http://localhost:8080';
+
+        const els = {
+            beforeZone: document.getElementById('beforeZone'),
+            afterZone: document.getElementById('afterZone'),
+            beforeInput: document.getElementById('beforeInput'),
+            afterInput: document.getElementById('afterInput'),
+            detectBtn: document.getElementById('detectBtn'),
+            resetBtn: document.getElementById('resetBtn'),
+            overlay: document.getElementById('overlay'),
+            resPanel: document.getElementById('resultsPanel'),
+            resImg: document.getElementById('resultImage'),
+            resContainer: document.getElementById('resultContainer')
+        };
+
+        // Handlers
+        ['before', 'after'].forEach(type => {
+            const zone = els[`${type}Zone`];
+            const input = els[`${type}Input`];
+
+            zone.onclick = () => input.click();
+            zone.ondragover = (e) => e.preventDefault(); // Fixed typo: ondragover
+            zone.ondrop = (e) => {
+                e.preventDefault();
+                if (e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0], type);
+            };
+            input.onchange = (e) => {
+                if (e.target.files[0]) handleFile(e.target.files[0], type);
+            };
+        });
+
+        function handleFile(file, type) {
+            state[type] = file;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const zone = els[`${type}Zone`];
+                let img = zone.querySelector('img');
+                if (!img) {
+                    img = document.createElement('img');
+                    zone.appendChild(img);
+                }
+                img.src = e.target.result;
+
+                // Hide the placeholder UI when image loaded
+                zone.querySelectorAll('span, .label, .sub-label').forEach(el => el.style.opacity = '0');
+
+                els.detectBtn.disabled = !(state.before && state.after);
+            };
+            reader.readAsDataURL(file);
+        }
+
+        els.detectBtn.onclick = async () => {
+            els.overlay.style.display = 'flex';
+            try {
+                const fd = new FormData();
+                fd.append('image_before', state.before);
+                fd.append('image_after', state.after);
+
+                const res = await fetch(`${API_URL}/detect`, { method: 'POST', body: fd });
+                const data = await res.json();
+
+                if (data.status === 'success') {
+                    els.resImg.src = `data:image/png;base64,${data.mask_base64}`;
+                    els.resContainer.style.display = 'flex';
+
+                    document.getElementById('resStatus').textContent = data.change_detected ? 'YES' : 'NO';
+                    document.getElementById('resRatio').textContent = `${data.change_percentage}%`;
+
+                    els.resPanel.style.display = 'block';
+
+                    // Show Reset, Hide Detect to prevent re-running same
+                    els.detectBtn.style.display = 'none';
+                    els.resetBtn.style.display = 'block';
+                }
+            } catch (e) { alert('Error connecting to backend'); }
+            finally { els.overlay.style.display = 'none'; }
+        };
+
+        els.resetBtn.onclick = () => {
+            // Clear State
+            state.before = null;
+            state.after = null;
+
+            // Clear Inputs
+            els.beforeInput.value = '';
+            els.afterInput.value = '';
+
+            // Clear Images & Restore Placeholders
+            ['before', 'after'].forEach(type => {
+                const zone = els[`${type}Zone`];
+                const img = zone.querySelector('img');
+                if (img) img.remove();
+                zone.querySelectorAll('span, .label, .sub-label').forEach(el => el.style.opacity = '1');
+            });
+
+            // Hide Results
+            els.resContainer.style.display = 'none';
+            els.resPanel.style.display = 'none';
+            els.resImg.src = '';
+
+            // Reset Buttons
+            els.detectBtn.style.display = 'block';
+            els.detectBtn.disabled = true;
+            els.resetBtn.style.display = 'none';
+        };
+    </script>
+</body>
+
+</html>
