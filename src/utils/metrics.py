@@ -17,11 +17,11 @@ def get_metrics(inputs, targets, threshold=0.5):
     preds = preds.detach().cpu().numpy().flatten().astype(int)
     targets = targets.detach().cpu().numpy().flatten().astype(int)
     
-    f1 = f1_score(targets, preds)
-    iou = jaccard_score(targets, preds)
+    f1 = f1_score(targets, preds, zero_division=0)
+    iou = jaccard_score(targets, preds, zero_division=0)
     kappa = cohen_kappa_score(targets, preds)
-    precision = precision_score(targets, preds)
-    recall = recall_score(targets, preds)
+    precision = precision_score(targets, preds, zero_division=0)
+    recall = recall_score(targets, preds, zero_division=0)
     
     return {
         'f1': f1,
