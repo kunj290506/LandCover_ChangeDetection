@@ -130,7 +130,28 @@ def main(args):
         if val_metrics['f1'] > best_f1:
             best_f1 = val_metrics['f1']
             torch.save(model.state_dict(), os.path.join(args.checkpoint_dir, 'best_model.pth'))
-            
+            # Auto-download best model in Colab
+            try:
+                from google.colab import files
+                print(f"Downloading best_model.pth...")
+                files.download(os.path.join(args.checkpoint_dir, 'best_model.pth'))
+            except ImportError:
+                pass
+            except Exception as e:
+                print(f"Colab download failed: {e}")
+
+        # Save and Download Latest Model (Every Epoch)
+        latest_path = os.path.join(args.checkpoint_dir, 'latest_model.pth')
+        torch.save(model.state_dict(), latest_path)
+        try:
+            from google.colab import files
+            print(f"Downloading latest_model.pth (Epoch {epoch+1})...")
+            files.download(latest_path)
+        except ImportError:
+            pass
+        except Exception as e:
+            print(f"Colab download failed: {e}")
+
         # Early Stopping check
         early_stopping(val_loss, model)
         if early_stopping.early_stop:
