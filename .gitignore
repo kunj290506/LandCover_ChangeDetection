@@ -6,6 +6,7 @@ data/
 # Model checkpoints and outputs
 checkpoints/
 checkpoints_optimized/
+checkpoints_advanced/
 output/
 *.pth
 *.pkl

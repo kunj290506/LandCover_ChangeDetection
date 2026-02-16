@@ -74,7 +74,8 @@ class SNUNet(nn.Module):
         # X_0_4
         self.conv0_4 = ConvBlock(base_channel*2 + base_channel*2 + base_channel + base_channel + base_channel, base_channel)
         
-        # Classifier
+        # Classifier with Dropout
+        self.dropout = nn.Dropout(0.2)
         self.final = nn.Conv2d(base_channel, num_classes, kernel_size=1)
         
     def forward(self, x1, x2):
@@ -139,6 +140,7 @@ class SNUNet(nn.Module):
         x0_4 = self.conv0_4(torch.cat([x1_0_0, x2_0_0, x0_1, x0_2, x0_3, up_1_3], dim=1))
         
         # Output
+        x0_4 = self.dropout(x0_4)
         out = self.final(x0_4) 
         
         return out

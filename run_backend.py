@@ -196,16 +196,28 @@ class RequestHandler(BaseHTTPRequestHandler):
             img1 = cv2.resize(img1, (256, 256))
             img2 = cv2.resize(img2, (256, 256))
             
-            # Normalize and convert to tensor
+            # Normalize (ImageNet stats)
+            mean = torch.tensor([0.485, 0.456, 0.406]).view(1, 3, 1, 1).to(cd_server.device)
+            std = torch.tensor([0.229, 0.224, 0.225]).view(1, 3, 1, 1).to(cd_server.device)
+            
             img1 = torch.from_numpy(img1.transpose(2, 0, 1)).float() / 255.0
             img2 = torch.from_numpy(img2.transpose(2, 0, 1)).float() / 255.0
+            
             img1 = img1.unsqueeze(0).to(cd_server.device)
             img2 = img2.unsqueeze(0).to(cd_server.device)
+            
+            # Apply Normalization
+            img1 = (img1 - mean) / std
+            img2 = (img2 - mean) / std
             
             # Inference
             with torch.no_grad():
                 logits = cd_server.model(img1, img2)
                 probs = torch.sigmoid(logits)
+                
+                # Debug logging
+                print(f"[DEBUG] Probs: Min={probs.min().item():.4f}, Max={probs.max().item():.4f}, Mean={probs.mean().item():.4f}")
+                
                 mask = (probs > 0.5).float()
                 
             # Convert to numpy and create visualization

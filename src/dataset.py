@@ -100,6 +100,27 @@ class ChangeDetectionDataset(Dataset):
             img2 = TF.rotate(img2, angle)
             label = TF.rotate(label, angle)
 
+        # Random Color Jitter (Brightness, Contrast, Saturation, Hue)
+        if random.random() > 0.5:
+            # Apply samejitter to both images to simulate same sensor conditions, 
+            # or different to simulate different conditions?
+            # For change detection, we ideally want robust to different conditions.
+            # Applying independently or same? 
+            # Let's apply slightly different jitters or same with probability.
+            
+            # Define jitter transform
+            jitter = transforms.ColorJitter(brightness=0.2, contrast=0.2, saturation=0.2, hue=0.1)
+            
+            # Apply to both
+            img1 = jitter(img1)
+            img2 = jitter(img2)
+
+        # Random Gaussian Blur
+        if random.random() > 0.5:
+            sigma = random.uniform(0.1, 2.0)
+            img1 = TF.gaussian_blur(img1, kernel_size=3, sigma=sigma)
+            img2 = TF.gaussian_blur(img2, kernel_size=3, sigma=sigma)
+
         return img1, img2, label
 
 # Preprocessing utils (e.g. for patch extraction from large files)

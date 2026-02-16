@@ -20,20 +20,29 @@ class DiceLoss(nn.Module):
         
         return 1 - dice
 
-class HybridLoss(nn.Module):
-    def __init__(self, weight_bce=0.7, weight_dice=0.3):
-        super(HybridLoss, self).__init__()
-        self.dice = DiceLoss()
-        self.weight_bce = weight_bce
-        self.weight_dice = weight_dice
-        # Store pos_weight value, will be converted to correct device during forward
-        self.pos_weight_value = weight_bce / weight_dice
+class FocalLoss(nn.Module):
+    def __init__(self, gamma=2, alpha=0.25, size_average=True):
+        super(FocalLoss, self).__init__()
+        self.gamma = gamma
+        self.alpha = alpha
 
     def forward(self, inputs, targets):
-        # Ensure pos_weight is on the same device as inputs
-        pos_weight = torch.tensor([self.pos_weight_value], device=inputs.device)
-        bce_loss = nn.functional.binary_cross_entropy_with_logits(
-            inputs, targets, pos_weight=pos_weight
-        )
+        bce_loss = F.binary_cross_entropy_with_logits(inputs, targets, reduction='none')
+        pt = torch.exp(-bce_loss)
+        focal_loss = self.alpha * (1-pt)**self.gamma * bce_loss
+        return focal_loss.mean()
+
+class HybridLoss(nn.Module):
+    def __init__(self, weight_bce=0.5, weight_dice=0.5):
+        super(HybridLoss, self).__init__()
+        self.dice = DiceLoss()
+        self.focal = FocalLoss(gamma=2, alpha=0.25)
+        self.weight_bce = weight_bce
+        self.weight_dice = weight_dice
+
+    def forward(self, inputs, targets):
+        # inputs are logits
+        focal = self.focal(inputs, targets)
         dice = self.dice(inputs, targets)
-        return bce_loss + dice
+        
+        return self.weight_bce * focal + self.weight_dice * dice

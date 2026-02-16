@@ -88,6 +88,20 @@ def main(args):
     
     # Model
     model = SNUNet(3, 1).to(device) # num_classes=1 for binary (using BCE)
+
+    # Load pretrained weights if specified
+    if args.weights:
+        if os.path.isfile(args.weights):
+            print(f"Loading pretrained weights from {args.weights}")
+            checkpoint = torch.load(args.weights, map_location=device)
+            # Handle both full checkpoint (with optimizer state) and state_dict only
+            if 'model_state_dict' in checkpoint:
+                model.load_state_dict(checkpoint['model_state_dict'])
+            else:
+                model.load_state_dict(checkpoint)
+            print("Weights loaded successfully.")
+        else:
+            print(f"Warning: Weights file not found at {args.weights}. Training from scratch.")
     
     # Loss & Optimizer
     criterion = HybridLoss(weight_bce=0.7, weight_dice=0.3)
@@ -130,6 +144,7 @@ if __name__ == "__main__":
     parser.add_argument('--epochs', type=int, default=100, help='number of epochs')
     parser.add_argument('--lr', type=float, default=3e-4, help='learning rate')
     parser.add_argument('--checkpoint_dir', type=str, default='./checkpoints', help='path to save checkpoints')
+    parser.add_argument('--weights', type=str, default=None, help='path to pretrained model weights for fine-tuning')
     
     args = parser.parse_args()
     
