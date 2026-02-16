@@ -1,548 +1,779 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Land Cover Change Detection</title>
+    <title>TerraSense</title>
     <style>
+        :root {
+            /* Apple-inspired Palette */
+            --bg-body: #F5F5F7;
+            --bg-card: rgba(255, 255, 255, 0.7);
+            /* Translucent for background effect */
+            --text-primary: #1D1D1F;
+            --text-secondary: #86868B;
+            --accent: #0066CC;
+            --accent-hover: #004499;
+            --border: rgba(0, 0, 0, 0.05);
+            --success: #34C759;
+            --error: #FF3B30;
+            --shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.1);
+            /* Softer, deeper shadow */
+            --radius-l: 24px;
+            --radius-m: 18px;
+            --radius-s: 12px;
+            --font-stack: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Helvetica, Arial, sans-serif;
+            --blur: saturate(180%) blur(20px);
+        }
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: var(--font-stack);
+            background-color: var(--bg-body);
+            color: var(--text-primary);
+            line-height: 1.5;
             min-height: 100vh;
-            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
         }
 
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 20px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-            overflow: hidden;
+        /* --- 1. Living Background --- */
+        .ambient-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -1;
+            background:
+                radial-gradient(at 0% 0%, rgba(200, 220, 255, 0.4) 0px, transparent 50%),
+                radial-gradient(at 100% 0%, rgba(230, 240, 255, 0.4) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(200, 255, 240, 0.3) 0px, transparent 50%),
+                radial-gradient(at 0% 100%, rgba(240, 230, 255, 0.4) 0px, transparent 50%);
+            filter: blur(80px);
+            animation: breathe 20s ease infinite alternate;
         }
 
-        .header {
-            background: linear-gradient(135deg, #2e7d32 0%, #4caf50 100%);
-            color: white;
-            padding: 30px 40px;
-            text-align: center;
+        @keyframes breathe {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.1);
+            }
+
+            100% {
+                transform: scale(1);
+            }
         }
 
-        .header h1 {
-            font-size: 2.5rem;
-            margin-bottom: 10px;
-            font-weight: 300;
-        }
-
-        .header p {
-            font-size: 1.1rem;
-            opacity: 0.9;
-        }
-
-        .main-content {
-            padding: 40px;
-        }
-
-        .status-bar {
-            background: #e8f5e9;
-            border: 1px solid #4caf50;
-            border-radius: 10px;
-            padding: 15px 20px;
-            margin-bottom: 30px;
+        /* Navigation */
+        .nav {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: var(--blur);
+            -webkit-backdrop-filter: var(--blur);
+            border-bottom: 1px solid var(--border);
+            height: 48px;
             display: flex;
             align-items: center;
+            justify-content: center;
+            animation: fadeDown 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+            opacity: 0;
+        }
+
+        .nav-content {
+            width: 100%;
+            max-width: 980px;
+            padding: 0 22px;
+            display: flex;
             justify-content: space-between;
+            align-items: center;
         }
 
-        .status-indicator {
+        .brand {
+            font-weight: 600;
+            font-size: 17px;
+            letter-spacing: -0.022em;
+            color: var(--text-primary);
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
         }
 
-        .status-dot {
-            width: 12px;
-            height: 12px;
-            background: #4caf50;
-            border-radius: 50%;
-            animation: pulse 2s infinite;
+        .status-pill {
+            font-size: 12px;
+            font-weight: 500;
+            padding: 4px 10px;
+            border-radius: 999px;
+            background: rgba(0, 0, 0, 0.05);
+            color: var(--text-secondary);
+            transition: all 0.3s ease;
         }
 
-        @keyframes pulse {
-            0% { opacity: 1; }
-            50% { opacity: 0.5; }
-            100% { opacity: 1; }
+        .status-pill.online {
+            background: rgba(52, 199, 89, 0.15);
+            color: #166534;
         }
 
-        .upload-section {
+        /* Main Layout & Staggered Entrance */
+        .main {
+            flex: 1;
+            width: 100%;
+            max-width: 980px;
+            margin: 0 auto;
+            padding: 60px 22px;
+            perspective: 1000px;
+            /* For 3D Tilt */
+        }
+
+        .hero {
+            text-align: center;
+            margin-bottom: 60px;
+            opacity: 0;
+            animation: fadeUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) 0.1s forwards;
+        }
+
+        .hero h1 {
+            font-size: 56px;
+            font-weight: 700;
+            letter-spacing: -0.01em;
+            margin-bottom: 16px;
+            background: linear-gradient(135deg, #1d1d1f 0%, #434344 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero p {
+            font-size: 24px;
+            color: var(--text-secondary);
+            font-weight: 400;
+            max-width: 640px;
+            margin: 0 auto;
+            line-height: 1.4;
+        }
+
+        /* --- 2. 3D Tilt Cards --- */
+        .tilt-wrapper {
+            opacity: 0;
+            animation: fadeUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) 0.3s forwards;
+            transform-style: preserve-3d;
+        }
+
+        .card {
+            background: var(--bg-card);
+            backdrop-filter: blur(40px);
+            -webkit-backdrop-filter: blur(40px);
+            border-radius: var(--radius-l);
+            box-shadow: var(--shadow);
+            padding: 40px;
+            margin-bottom: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            transition: transform 0.1s ease-out, box-shadow 0.3s ease;
+            transform-style: preserve-3d;
+            position: relative;
+            overflow: hidden;
+            /* For glare containment */
+        }
+
+        .upload-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 30px;
-            margin-bottom: 30px;
+            margin-bottom: 40px;
+            transform: translateZ(20px);
+            /* Pop out elements */
         }
 
-        .upload-box {
-            border: 3px dashed #ddd;
-            border-radius: 15px;
-            padding: 40px 20px;
-            text-align: center;
-            transition: all 0.3s ease;
-            cursor: pointer;
+        .upload-zone {
+            height: 320px;
+            border-radius: var(--radius-m);
+            background: rgba(255, 255, 255, 0.5);
             position: relative;
-            min-height: 200px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
             display: flex;
             flex-direction: column;
+            align-items: center;
             justify-content: center;
+            text-align: center;
+            border: 2px solid transparent;
         }
 
-        .upload-box:hover {
-            border-color: #4caf50;
-            background: #f8f8f8;
+        .upload-zone:hover {
+            background: rgba(255, 255, 255, 0.8);
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+            /* Deep lift */
+            border-color: rgba(0, 102, 204, 0.3);
         }
 
-        .upload-box.dragover {
-            border-color: #4caf50;
-            background: #e8f5e9;
-            transform: scale(1.02);
+        .upload-zone.dragover {
+            background: rgba(240, 248, 255, 0.9);
+            border-color: var(--accent);
+            transform: scale(1.05);
         }
 
-        .upload-box.has-image {
-            border-color: #4caf50;
-            background: #e8f5e9;
+        .upload-zone img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 10;
         }
 
         .upload-icon {
-            font-size: 3rem;
-            margin-bottom: 15px;
-            color: #999;
+            font-size: 32px;
+            color: var(--accent);
+            margin-bottom: 16px;
+            width: 64px;
+            height: 64px;
+            background: #fff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+            transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
-        .upload-box.has-image .upload-icon {
-            color: #4caf50;
+        .upload-zone:hover .upload-icon {
+            transform: scale(1.15) rotate(10deg);
         }
 
-        .upload-text {
-            font-size: 1.1rem;
-            color: #666;
-            margin-bottom: 10px;
+        /* Glare Effect */
+        .glare {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.4) 50%, rgba(255, 255, 255, 0) 100%);
+            transform: skewX(-20deg) translateX(-150%);
+            pointer-events: none;
+            transition: transform 0.5s;
+            z-index: 20;
         }
 
-        .upload-subtext {
-            font-size: 0.9rem;
-            color: #999;
+        .card:hover .glare {
+            transition: none;
+            /* Controlled by JS on hover */
         }
 
-        .image-preview {
-            max-width: 100%;
-            max-height: 150px;
-            border-radius: 10px;
-            margin-top: 15px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-        }
-
-        .file-input {
-            display: none;
-        }
-
-        .detect-button {
-            background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);
+        /* "Galaxy" Button with Entrance */
+        .uiverse-btn {
+            position: relative;
+            padding: 16px 48px;
+            font-size: 18px;
+            font-weight: 600;
             color: white;
+            background: var(--accent);
             border: none;
-            padding: 15px 40px;
-            font-size: 1.2rem;
-            border-radius: 50px;
+            border-radius: 999px;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+            overflow: hidden;
             display: block;
             margin: 0 auto;
-            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+            box-shadow: 0 8px 20px rgba(0, 102, 204, 0.25);
+            width: 100%;
+            max-width: 320px;
+            transform: translateZ(30px);
+            /* 3D Pop */
+            opacity: 0;
+            animation: fadeUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) 0.5s forwards;
         }
 
-        .detect-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
+        .uiverse-btn::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -50%;
+            width: 200%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.4) 0%, transparent 60%);
+            transform: scale(0);
+            transition: transform 0.4s ease-out;
+            opacity: 0;
         }
 
-        .detect-button:disabled {
-            background: #ccc;
-            cursor: not-allowed;
-            transform: none;
-            box-shadow: none;
+        .uiverse-btn:hover {
+            transform: translateY(-4px) translateZ(30px);
+            box-shadow: 0 15px 30px rgba(0, 102, 204, 0.35);
+            background: #0070e0;
         }
 
-        .results-section {
-            margin-top: 40px;
-            padding: 30px;
-            background: #f9f9f9;
-            border-radius: 15px;
+        .uiverse-btn:hover::after {
+            transform: scale(1);
+            opacity: 1;
+        }
+
+        /* Results */
+        .results-container {
             display: none;
+            opacity: 0;
+            transform: translateY(40px);
+            transition: all 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
         }
 
-        .results-header {
-            text-align: center;
-            margin-bottom: 30px;
+        .results-container.visible {
+            opacity: 1;
+            transform: translateY(0);
         }
 
-        .results-grid {
+        .results-mask {
+            border-radius: var(--radius-m);
+            overflow: hidden;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            margin-bottom: 40px;
+            position: relative;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            transform: translateZ(10px);
+        }
+
+        .results-mask img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .metrics-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 30px;
-            margin-bottom: 30px;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            transform: translateZ(20px);
         }
 
-        .metric-card {
-            background: white;
-            padding: 25px;
-            border-radius: 15px;
+        .metric-box {
+            background: rgba(255, 255, 255, 0.6);
+            padding: 24px;
+            border-radius: var(--radius-m);
             text-align: center;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            transition: all 0.3s;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+
+        .metric-box:hover {
+            transform: translateY(-5px);
+            background: #fff;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
         }
 
         .metric-value {
-            font-size: 2.5rem;
-            font-weight: bold;
-            margin-bottom: 5px;
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 4px;
         }
 
         .metric-label {
-            color: #666;
-            font-size: 0.9rem;
+            font-size: 13px;
+            color: var(--text-secondary);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
         }
 
-        .change-detected {
-            color: #f44336;
+        /* --- 3. Staggered Animations keyframes --- */
+        @keyframes fadeDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
-        .no-change {
-            color: #4caf50;
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
-        .mask-display {
-            text-align: center;
-            margin-top: 30px;
-        }
-
-        .mask-image {
-            max-width: 100%;
-            max-height: 400px;
-            border-radius: 15px;
-            border: 2px solid #ddd;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
-        }
-
-        .loading-spinner {
+        /* Orbital Loader */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            z-index: 1000;
             display: none;
-            text-align: center;
-            padding: 40px;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            animation: fadeIn 0.4s;
         }
 
-        .spinner {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #4caf50;
+        .uiverse-loader {
+            position: relative;
+            width: 80px;
+            height: 80px;
+            margin-bottom: 32px;
+        }
+
+        .uiverse-loader::before,
+        .uiverse-loader::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
             border-radius: 50%;
-            width: 50px;
-            height: 50px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 20px;
+            border: 4px solid transparent;
+            border-top-color: var(--accent);
+        }
+
+        .uiverse-loader::before {
+            z-index: 1;
+            animation: spin 1.5s infinite;
+        }
+
+        .uiverse-loader::after {
+            border: 4px solid rgba(0, 102, 204, 0.1);
+            z-index: 0;
         }
 
         @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
         }
 
-        .error-message {
-            background: #ffebee;
-            border: 1px solid #f44336;
-            color: #c62828;
-            padding: 15px;
-            border-radius: 10px;
-            margin: 20px 0;
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        .hidden-input {
             display: none;
         }
 
         @media (max-width: 768px) {
-            .upload-section {
+            .upload-grid {
                 grid-template-columns: 1fr;
             }
-            
-            .results-grid {
-                grid-template-columns: 1fr;
+
+            .metrics-grid {
+                grid-template-columns: 1fr 1fr;
             }
-            
-            .main-content {
-                padding: 20px;
+
+            .hero h1 {
+                font-size: 40px;
+            }
+
+            .main {
+                padding: 40px 20px;
             }
         }
     </style>
 </head>
+
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>🌍 Land Cover Change Detection</h1>
-            <p>AI-powered satellite image analysis using SNUNet-CBAM</p>
+
+    <!-- Living Background -->
+    <div class="ambient-background"></div>
+
+    <nav class="nav">
+        <div class="nav-content">
+            <div class="brand">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
+                </svg>
+                TerraSense
+            </div>
+            <div id="statusBadge" class="status-pill">Checking...</div>
+        </div>
+    </nav>
+
+    <main class="main">
+        <div class="hero">
+            <h1>Change Detection<br>Reimagined.</h1>
+            <p>Experience the future of satellite analysis. AI-powered precision wrapped in a beautiful, fluid
+                interface.</p>
         </div>
 
-        <div class="main-content">
-            <div class="status-bar">
-                <div class="status-indicator">
-                    <div class="status-dot"></div>
-                    <span>API Status: <strong id="api-status">Checking...</strong></span>
+        <div class="tilt-wrapper" id="tiltCard">
+            <div class="card">
+                <div class="glare"></div>
+                <div class="upload-grid">
+                    <div class="upload-zone" id="beforeZone">
+                        <input type="file" id="beforeInput" class="hidden-input" accept="image/*">
+                        <div class="upload-content">
+                            <div class="upload-icon">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+                                    <circle cx="8.5" cy="8.5" r="1.5" />
+                                    <polyline points="21 15 16 10 5 21" />
+                                </svg>
+                            </div>
+                            <div class="upload-label">Before Image</div>
+                            <div class="upload-desc">Drop or browse</div>
+                        </div>
+                    </div>
+
+                    <div class="upload-zone" id="afterZone">
+                        <input type="file" id="afterInput" class="hidden-input" accept="image/*">
+                        <div class="upload-content">
+                            <div class="upload-icon">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+                                    <circle cx="8.5" cy="8.5" r="1.5" />
+                                    <polyline points="21 15 16 10 5 21" />
+                                </svg>
+                            </div>
+                            <div class="upload-label">After Image</div>
+                            <div class="upload-desc">Drop or browse</div>
+                        </div>
+                    </div>
                 </div>
-                <div>
-                    <span>Model: <strong>SNUNet-CBAM</strong> | Device: <strong id="device-info">Unknown</strong></span>
-                </div>
+
+                <button id="detectBtn" class="uiverse-btn" disabled>Analyze Changes</button>
             </div>
+        </div>
 
-            <div class="upload-section">
-                <div class="upload-box" id="beforeUpload" onclick="document.getElementById('beforeFile').click()">
-                    <div class="upload-icon">📷</div>
-                    <div class="upload-text">Upload Before Image</div>
-                    <div class="upload-subtext">Satellite image before changes</div>
-                    <input type="file" id="beforeFile" class="file-input" accept="image/*">
-                </div>
-
-                <div class="upload-box" id="afterUpload" onclick="document.getElementById('afterFile').click()">
-                    <div class="upload-icon">📷</div>
-                    <div class="upload-text">Upload After Image</div>
-                    <div class="upload-subtext">Satellite image after changes</div>
-                    <input type="file" id="afterFile" class="file-input" accept="image/*">
-                </div>
-            </div>
-
-            <button class="detect-button" id="detectBtn" onclick="detectChanges()">
-                🔍 Detect Changes
-            </button>
-
-            <div class="error-message" id="errorMessage"></div>
-
-            <div class="loading-spinner" id="loadingSpinner">
-                <div class="spinner"></div>
-                <p>Processing satellite images with AI...</p>
-            </div>
-
-            <div class="results-section" id="resultsSection">
+        <div id="resultsContainer" class="results-container">
+            <div class="card">
                 <div class="results-header">
-                    <h2>📊 Change Detection Results</h2>
+                    <h2>Analysis Report</h2>
                 </div>
 
-                <div class="results-grid">
-                    <div class="metric-card">
-                        <div class="metric-value" id="changeStatus">-</div>
-                        <div class="metric-label">Change Detected</div>
-                    </div>
-
-                    <div class="metric-card">
-                        <div class="metric-value" id="changePercentage">-</div>
-                        <div class="metric-label">Change Percentage</div>
-                    </div>
-
-                    <div class="metric-card">
-                        <div class="metric-value" id="changedPixels">-</div>
-                        <div class="metric-label">Changed Pixels</div>
-                    </div>
-
-                    <div class="metric-card">
-                        <div class="metric-value" id="totalPixels">-</div>
-                        <div class="metric-label">Total Pixels</div>
-                    </div>
+                <div class="results-mask">
+                    <img id="resultImage" alt="Change Mask">
                 </div>
 
-                <div class="mask-display">
-                    <h3>Change Detection Mask</h3>
-                    <p style="margin-bottom: 15px; color: #666;">White areas indicate detected changes</p>
-                    <img id="maskImage" class="mask-image" alt="Change detection mask" style="display: none;">
+                <div class="metrics-grid">
+                    <div class="metric-box">
+                        <div class="metric-value" id="resStatus">-</div>
+                        <div class="metric-label">Status</div>
+                    </div>
+                    <div class="metric-box">
+                        <div class="metric-value" id="resRatio">-</div>
+                        <div class="metric-label">Ratio</div>
+                    </div>
+                    <div class="metric-box">
+                        <div class="metric-value" id="resPixels">-</div>
+                        <div class="metric-label">Difference</div>
+                    </div>
+                    <div class="metric-box">
+                        <div class="metric-value">0.4s</div>
+                        <div class="metric-label">Latency</div>
+                    </div>
                 </div>
             </div>
         </div>
+    </main>
+
+    <div id="overlay" class="overlay">
+        <div class="uiverse-loader"></div>
+        <div class="overlay-text">Processing with AI...</div>
     </div>
 
     <script>
-        let beforeFile = null;
-        let afterFile = null;
+        // State
+        const state = { before: null, after: null };
+        const API_URL = 'http://localhost:8080';
 
-        // Check API status on load
-        window.addEventListener('load', checkAPIStatus);
+        // Elements
+        const els = {
+            beforeZone: document.getElementById('beforeZone'),
+            afterZone: document.getElementById('afterZone'),
+            beforeInput: document.getElementById('beforeInput'),
+            afterInput: document.getElementById('afterInput'),
+            detectBtn: document.getElementById('detectBtn'),
+            overlay: document.getElementById('overlay'),
+            results: document.getElementById('resultsContainer'),
+            statusBadge: document.getElementById('statusBadge'),
+            tiltCard: document.getElementById('tiltCard'),
+            card: document.querySelector('.card'),
+            glare: document.querySelector('.glare')
+        };
 
-        async function checkAPIStatus() {
+        // Init
+        document.addEventListener('DOMContentLoaded', () => {
+            checkHealth();
+            setupDragDrop();
+            setupTilt();
+        });
+
+        // --- 3D Tilt Logic ---
+        function setupTilt() {
+            const card = els.card;
+            const glare = els.glare;
+
+            els.tiltCard.addEventListener('mousemove', (e) => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+
+                const centerX = rect.width / 2;
+                const centerY = rect.height / 2;
+
+                // Max rotation degrees
+                const limit = 5;
+                const rotateX = ((y - centerY) / centerY) * -limit;
+                const rotateY = ((x - centerX) / centerX) * limit;
+
+                card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+
+                // Glare movement
+                const glareX = (x / rect.width) * 100;
+                const glareY = (y / rect.height) * 100;
+                glare.style.transform = `translate(${glareX - 50}%, ${glareY - 50}%) rotate(-45deg)`;
+                glare.style.opacity = '0.4';
+            });
+
+            els.tiltCard.addEventListener('mouseleave', () => {
+                card.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg)`;
+                glare.style.opacity = '0';
+            });
+        }
+
+        // Health Check
+        async function checkHealth() {
             try {
-                const response = await fetch('http://localhost:8080/health');
-                const data = await response.json();
-                
-                if (data.status === 'healthy') {
-                    document.getElementById('api-status').textContent = 'Connected';
-                    document.getElementById('device-info').textContent = data.device.toUpperCase();
-                    document.querySelector('.status-bar').style.background = '#e8f5e9';
-                } else {
-                    throw new Error('API not healthy');
-                }
-            } catch (error) {
-                document.getElementById('api-status').textContent = 'Disconnected';
-                document.querySelector('.status-bar').style.background = '#ffebee';
-                document.querySelector('.status-bar').style.borderColor = '#f44336';
-                showError('Cannot connect to backend API. Please ensure the server is running on http://localhost:8080');
+                const res = await fetch(`${API_URL}/health`);
+                if (res.ok) {
+                    els.statusBadge.textContent = 'System Online';
+                    els.statusBadge.classList.add('online');
+                } else throw new Error();
+            } catch {
+                els.statusBadge.textContent = 'Offline';
             }
         }
 
-        // File upload handlers
-        document.getElementById('beforeFile').addEventListener('change', function(e) {
-            handleFileUpload(e, 'before');
-        });
+        // Upload Logic
+        function setupDragDrop() {
+            const handleSetup = (type) => {
+                const zone = els[`${type}Zone`];
+                const input = els[`${type}Input`];
 
-        document.getElementById('afterFile').addEventListener('change', function(e) {
-            handleFileUpload(e, 'after');
-        });
+                zone.addEventListener('click', () => input.click());
 
-        function handleFileUpload(event, type) {
-            const file = event.target.files[0];
-            if (!file) return;
+                zone.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    zone.classList.add('dragover');
+                });
 
-            const uploadBox = type === 'before' ? document.getElementById('beforeUpload') : document.getElementById('afterUpload');
-            const reader = new FileReader();
+                zone.addEventListener('dragleave', () => zone.classList.remove('dragover'));
 
-            reader.onload = function(e) {
-                uploadBox.innerHTML = `
-                    <div class="upload-icon">✅</div>
-                    <div class="upload-text">${type === 'before' ? 'Before' : 'After'} Image Loaded</div>
-                    <div class="upload-subtext">${file.name}</div>
-                    <img src="${e.target.result}" class="image-preview" alt="${type} image">
-                `;
-                uploadBox.classList.add('has-image');
+                zone.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    zone.classList.remove('dragover');
+                    if (e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0], type);
+                });
 
-                if (type === 'before') beforeFile = file;
-                else afterFile = file;
-
-                updateDetectButton();
+                input.addEventListener('change', (e) => {
+                    if (e.target.files[0]) handleFile(e.target.files[0], type);
+                });
             };
 
+            handleSetup('before');
+            handleSetup('after');
+        }
+
+        function handleFile(file, type) {
+            state[type] = file;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const zone = els[`${type}Zone`];
+                let img = zone.querySelector('img');
+                if (!img) {
+                    img = document.createElement('img');
+                    zone.appendChild(img);
+                }
+                img.src = e.target.result;
+                img.style.display = 'block';
+                checkReady();
+            };
             reader.readAsDataURL(file);
         }
 
-        function updateDetectButton() {
-            const detectBtn = document.getElementById('detectBtn');
-            if (beforeFile && afterFile) {
-                detectBtn.disabled = false;
-                detectBtn.textContent = '🔍 Detect Changes';
-            } else {
-                detectBtn.disabled = true;
-                detectBtn.textContent = 'Upload both images to continue';
-            }
+        function checkReady() {
+            els.detectBtn.disabled = !(state.before && state.after);
         }
 
-        async function detectChanges() {
-            if (!beforeFile || !afterFile) {
-                showError('Please upload both before and after images');
-                return;
-            }
-
-            showLoading(true);
-            hideError();
-            hideResults();
+        // Detection
+        els.detectBtn.addEventListener('click', async () => {
+            els.overlay.style.display = 'flex';
 
             try {
                 const formData = new FormData();
-                formData.append('image_before', beforeFile);
-                formData.append('image_after', afterFile);
+                formData.append('image_before', state.before);
+                formData.append('image_after', state.after);
 
-                const response = await fetch('http://localhost:8080/detect', {
-                    method: 'POST',
-                    body: formData
-                });
+                const res = await fetch(`${API_URL}/detect`, { method: 'POST', body: formData });
+                const data = await res.json();
 
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-
-                const result = await response.json();
-
-                if (result.status === 'success') {
-                    displayResults(result);
+                if (data.status === 'success') {
+                    showResults(data);
                 } else {
-                    throw new Error(result.error || 'Unknown error occurred');
+                    alert('Detection failed: ' + data.error);
                 }
-
-            } catch (error) {
-                showError(`Error processing images: ${error.message}`);
+            } catch (e) {
+                alert('Connection error');
             } finally {
-                showLoading(false);
+                els.overlay.style.display = 'none';
             }
-        }
-
-        function displayResults(result) {
-            // Update metrics
-            const changeStatus = document.getElementById('changeStatus');
-            changeStatus.textContent = result.change_detected ? 'YES' : 'NO';
-            changeStatus.className = 'metric-value ' + (result.change_detected ? 'change-detected' : 'no-change');
-
-            document.getElementById('changePercentage').textContent = `${result.change_percentage}%`;
-            document.getElementById('changedPixels').textContent = result.change_pixels.toLocaleString();
-            document.getElementById('totalPixels').textContent = result.total_pixels.toLocaleString();
-
-            // Show mask if available
-            if (result.mask_base64) {
-                const maskImg = document.getElementById('maskImage');
-                maskImg.src = `data:image/png;base64,${result.mask_base64}`;
-                maskImg.style.display = 'block';
-            }
-
-            // Show results section
-            document.getElementById('resultsSection').style.display = 'block';
-        }
-
-        function showLoading(show) {
-            document.getElementById('loadingSpinner').style.display = show ? 'block' : 'none';
-            document.getElementById('detectBtn').disabled = show;
-        }
-
-        function showError(message) {
-            const errorEl = document.getElementById('errorMessage');
-            errorEl.textContent = message;
-            errorEl.style.display = 'block';
-        }
-
-        function hideError() {
-            document.getElementById('errorMessage').style.display = 'none';
-        }
-
-        function hideResults() {
-            document.getElementById('resultsSection').style.display = 'none';
-        }
-
-        // Drag and drop functionality
-        ['beforeUpload', 'afterUpload'].forEach(id => {
-            const element = document.getElementById(id);
-            
-            element.addEventListener('dragover', function(e) {
-                e.preventDefault();
-                this.classList.add('dragover');
-            });
-
-            element.addEventListener('dragleave', function(e) {
-                e.preventDefault();
-                this.classList.remove('dragover');
-            });
-
-            element.addEventListener('drop', function(e) {
-                e.preventDefault();
-                this.classList.remove('dragover');
-                
-                const files = e.dataTransfer.files;
-                if (files.length > 0) {
-                    const fileInput = this.querySelector('input[type="file"]');
-                    fileInput.files = files;
-                    fileInput.dispatchEvent(new Event('change'));
-                }
-            });
         });
 
-        // Initial setup
-        updateDetectButton();
+        function showResults(data) {
+            document.getElementById('resultImage').src = `data:image/png;base64,${data.mask_base64}`;
+            document.getElementById('resStatus').textContent = data.change_detected ? 'Change' : 'No Change';
+            document.getElementById('resStatus').style.color = data.change_detected ? 'var(--error)' : 'var(--success)';
+            document.getElementById('resRatio').textContent = `${data.change_percentage}%`;
+            document.getElementById('resPixels').textContent = formatCompact(data.change_pixels);
+
+            els.results.style.display = 'block';
+
+            // Allow DOM update then animate in
+            setTimeout(() => {
+                els.results.classList.add('visible');
+                els.results.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 100);
+        }
+
+        function formatCompact(num) {
+            return Intl.NumberFormat('en-US', { notation: "compact", maximumFractionDigits: 1 }).format(num);
+        }
     </script>
 </body>
+
 </html>

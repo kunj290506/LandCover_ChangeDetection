@@ -81,25 +81,25 @@ def run_frontend_server(port=3000):
     try:
         with socketserver.TCPServer(("", port), FrontendHandler) as httpd:
             print("=" * 60)
-            print("🎨 LAND COVER CHANGE DETECTION - FRONTEND SERVER")
+            print("LAND COVER CHANGE DETECTION - FRONTEND SERVER")
             print("=" * 60)
-            print(f"🌐 Frontend URL: http://localhost:{port}")
-            print(f"📱 Open in browser: http://localhost:{port}")
-            print(f"🔗 Backend API: http://localhost:8080")
-            print(f"📁 Serving: frontend/ directory")
+            print(f"Frontend URL: http://localhost:{port}")
+            print(f"Open in browser: http://localhost:{port}")
+            print(f"Backend API: http://localhost:8080")
+            print(f"Serving: frontend/ directory")
             print()
-            print("✨ Features:")
-            print("   • Drag & drop image upload")
-            print("   • Real-time change detection")
-            print("   • Interactive results visualization")
-            print("   • Responsive design")
+            print("Features:")
+            print("   - Drag & drop image upload")
+            print("   - Real-time change detection")
+            print("   - Interactive results visualization")
+            print("   - Responsive design")
             print()
-            print("⏹️  Press Ctrl+C to stop")
+            print("Press Ctrl+C to stop")
             print("=" * 60)
             
             httpd.serve_forever()
     except KeyboardInterrupt:
-        print("\n\n⏹️  Frontend server stopped")
+        print("\n\nFrontend server stopped")
     except Exception as e:
         print(f"❌ Frontend server error: {e}")
 

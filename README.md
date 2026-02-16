@@ -212,7 +212,6 @@ MIT License
   author={Your Name},
   year={2026},
   url={https://github.com/username/LandCover_ChangeDetection}
-}
 ```
 
 ## References
@@ -220,14 +219,6 @@ MIT License
 - LEVIR-CD Dataset: https://justchenhao.github.io/LEVIR/
 - SNUNet: "SNUNet-CD: A Densely Connected Siamese Network for Change Detection"
 - CBAM: "CBAM: Convolutional Block Attention Module"
-
-## Enterprise Docs
-
-- [Architecture](docs/architecture.md)
-- [Deployment Guide](docs/deployment_guide.md)
-- [API Contract](docs/api_contract.md)
-- [Operations Runbook](docs/operations_runbook.md)
-- [CI/CD](docs/ci_cd.md)
 
 ## Contact
 

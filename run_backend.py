@@ -28,7 +28,7 @@ class ChangeDetectionServer:
     def __init__(self):
         self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         self.model = self.load_model()
-        print(f"✅ Server initialized with device: {self.device}")
+        print(f"[INFO] Server initialized with device: {self.device}")
         
     def load_model(self):
         """Load trained model"""
@@ -327,24 +327,24 @@ def run_server(port=8080):
     try:
         server = HTTPServer(('localhost', port), RequestHandler)
         print("=" * 60)
-        print("🚀 LAND COVER CHANGE DETECTION - BACKEND RUNNING")
+        print("LAND COVER CHANGE DETECTION - BACKEND RUNNING")
         print("=" * 60)
-        print(f"🌐 Server URL: http://localhost:{port}")
-        print(f"💻 Health Check: http://localhost:{port}/health")
-        print(f"🖥️  Device: {cd_server.device}")
-        print(f"✅ Model: Loaded and ready")
+        print(f"Server URL: http://localhost:{port}")
+        print(f"Health Check: http://localhost:{port}/health")
+        print(f"Device: {cd_server.device}")
+        print(f"Model: Loaded and ready")
         print()
-        print("📱 Open http://localhost:8080 in your browser")
-        print("⏹️  Press Ctrl+C to stop")
+        print("Open http://localhost:8080 in your browser")
+        print("Press Ctrl+C to stop")
         print("=" * 60)
         
         server.serve_forever()
         
     except KeyboardInterrupt:
-        print("\n\n⏹️  Server stopped")
+        print("\n\nServer stopped")
         server.shutdown()
     except Exception as e:
-        print(f"❌ Server error: {e}")
+        print(f"Server error: {e}")
 
 if __name__ == "__main__":
     run_server()
